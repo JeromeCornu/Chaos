@@ -7,6 +7,8 @@ using TMPro;
 
 public class SteamLobby : MonoBehaviour
 {
+    public static SteamLobby Instance;
+
     // Callbacks - call when steam does actions
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
@@ -17,16 +19,14 @@ public class SteamLobby : MonoBehaviour
     private const string HostAddressKey = "HostAddress";
     private CustomNetworkManager manager;
 
-    // GameObject
-    public GameObject HostButton;
-    public TextMeshProUGUI LobbyNameText;
-
     private void Start()
     {
         if(!SteamManager.Initialized) {
             Debug.LogWarning("You need to open Steam first.");
             return;
         }
+
+        if(Instance == null) { Instance = this; }
 
         manager = GetComponent<CustomNetworkManager>();
 
@@ -64,10 +64,6 @@ public class SteamLobby : MonoBehaviour
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
         // Everyone (host+clients)
-        HostButton.SetActive(false);
-        CurrentLobbyID = callback.m_ulSteamIDLobby;
-        LobbyNameText.gameObject.SetActive(true);
-        LobbyNameText.text = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "name");
         Debug.Log("Welcome " + SteamFriends.GetPersonaName() + " to the Steam Lobby!");
 
 
