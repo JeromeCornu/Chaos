@@ -49,6 +49,8 @@ public class SteamLobby : MonoBehaviour
 
         manager.StartHost();
 
+        // set lobby ID
+        CurrentLobbyID = callback.m_ulSteamIDLobby;
         // set lobby's address
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey, SteamUser.GetSteamID().ToString());
         // set lobby's name by host username
@@ -65,7 +67,6 @@ public class SteamLobby : MonoBehaviour
     {
         // Everyone (host+clients)
         Debug.Log("Welcome " + SteamFriends.GetPersonaName() + " to the Steam Lobby!");
-
 
         // Clients
         if (NetworkServer.active) { return; }

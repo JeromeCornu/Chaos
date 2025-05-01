@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Steamworks;
 using Mirror;
+using TMPro;
 
 
 public class PlayerListItem : MonoBehaviour
@@ -13,7 +14,7 @@ public class PlayerListItem : MonoBehaviour
     public ulong PlayerSteamID;
     private bool AvatarReceived;
 
-    public Text PlayerNameText;
+    public TextMeshProUGUI PlayerNameText;
     public RawImage PlayerIcon;
 
     protected Callback<AvatarImageLoaded_t> ImageLoaded;
@@ -33,6 +34,7 @@ public class PlayerListItem : MonoBehaviour
     {
         int ImageID = SteamFriends.GetLargeFriendAvatar((CSteamID)PlayerSteamID);
         if (ImageID == -1) { return; }
+        PlayerIcon.texture = GetSteamImageAsTexture(ImageID);
     }
 
     private void OnImageLoaded(AvatarImageLoaded_t callback)

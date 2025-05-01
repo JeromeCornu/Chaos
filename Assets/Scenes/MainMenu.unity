@@ -463,12 +463,12 @@ GameObject:
   - component: {fileID: 651272381}
   - component: {fileID: 651272380}
   m_Layer: 5
-  m_Name: LobbyNameText
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &651272379
 RectTransform:
   m_ObjectHideFlags: 0
@@ -508,7 +508,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Who's lobby
+  m_text: Chaos
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -636,16 +636,18 @@ MonoBehaviour:
   runInBackground: 1
   autoStartServerBuild: 1
   serverTickRate: 30
-  offlineScene: 
-  onlineScene: 
+  offlineScene: Assets/Scenes/MainMenu.unity
+  onlineScene: Assets/Scenes/Lobby.unity
   transport: {fileID: 716291770}
   networkAddress: localhost
   maxConnections: 100
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 0}
-  autoCreatePlayer: 0
+  playerPrefab: {fileID: 4802524551208501460, guid: f5b118cca4d65d24b9e926fe74e6dc46, type: 3}
+  autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 7651553268621482656, guid: 1d5cad6bd161ad541a75ef7b9a04e7f9, type: 3}
+  GamePlayerPrefab: {fileID: 1821388006210974504, guid: 1d5cad6bd161ad541a75ef7b9a04e7f9, type: 3}
 --- !u!114 &716291770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,8 +691,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentLobbyID: 0
-  HostButton: {fileID: 223144216}
-  LobbyNameText: {fileID: 651272380}
 --- !u!1 &1256024395
 GameObject:
   m_ObjectHideFlags: 0
