@@ -12,6 +12,8 @@ public class PlayerObjectController : NetworkBehaviour
     [SyncVar] public ulong PlayerSteamID;
     // "hook" = when the var changes, the function "PlayerNameUpdate" is called
     [SyncVar(hook = nameof(PlayerNameUpdate))] public string PlayerName;
+    [SyncVar(hook = nameof(PlayerReadyUpdate))] public bool Ready;
+
 
     private CustomNetworkManager manager;
     private CustomNetworkManager Manager
@@ -61,7 +63,6 @@ public class PlayerObjectController : NetworkBehaviour
         PlayerSteamID = steamID;
     }
 
-
     public void PlayerNameUpdate(string OldValue, string NewValue)
     {
         if (isServer) // host
@@ -74,4 +75,30 @@ public class PlayerObjectController : NetworkBehaviour
         }
     }
 
+
+    private void PlayerReadyUpdate(bool OldValue, bool NewValue)
+    {
+        if (isServer)
+        {
+            this.Ready = NewValue;
+        }
+        if (isClient)
+        {
+            LobbyController.Instance.UpdatePlayerList();
+        }
+    }
+
+    [Command]
+    private void CmdSetPlayerReady()
+    {
+        this.PlayerReadyUpdate(this.Ready, !this.Ready);
+    }
+
+    public void ChangeReady()
+    {
+        if (hasAuthority)
+        {
+            CmdSetPlayerReady();
+        }
+    }
 }
