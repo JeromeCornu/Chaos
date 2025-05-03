@@ -208,4 +208,10 @@ public class LobbyController : MonoBehaviour
             StartGameButton.interactable = false;
         }
     }
+
+    public void StartGame(string SceneName)
+    {
+        LocalPlayerController.CanStartGame(SceneName);
+    }
+
 }

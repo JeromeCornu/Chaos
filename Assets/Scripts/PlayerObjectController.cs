@@ -14,6 +14,9 @@ public class PlayerObjectController : NetworkBehaviour
     [SyncVar(hook = nameof(PlayerNameUpdate))] public string PlayerName;
     [SyncVar(hook = nameof(PlayerReadyUpdate))] public bool Ready;
 
+    // Cosmetics
+    [SyncVar(hook = nameof(SendPlayerColor))] public int PlayerColor;
+
 
     private CustomNetworkManager manager;
     private CustomNetworkManager Manager
@@ -28,6 +31,13 @@ public class PlayerObjectController : NetworkBehaviour
         }
     }
 
+
+    private void Start()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
+
     public override void OnStartAuthority()
     {
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
@@ -36,6 +46,9 @@ public class PlayerObjectController : NetworkBehaviour
         gameObject.name = "LocalGamePlayer";
         LobbyController.Instance.FindLocalPlayer();
         LobbyController.Instance.UpdateLobbyName();
+
+        int savedColor = PlayerPrefs.GetInt("currentColorIndex", 0);
+        CmdUpdatePlayerColor(savedColor);
     }
 
     public override void OnStartClient()
@@ -101,4 +114,48 @@ public class PlayerObjectController : NetworkBehaviour
             CmdSetPlayerReady();
         }
     }
+
+    // ----- Start Game -----
+    
+    // host call this, then call command
+    public void CanStartGame(string SceneName)
+    {
+        if(hasAuthority)
+        {
+            CmdCanStartGame(SceneName);
+        }
+    }
+
+    [Command] // run on every client
+    public void CmdCanStartGame(string SceneName)
+    {
+        manager.StartGame(SceneName);
+    }
+
+
+    // ----- Cosmetics -----
+
+    [Command]
+    public void CmdUpdatePlayerColor(int newValue)
+    {
+        SendPlayerColor(PlayerColor, newValue);
+    }
+
+    public void SendPlayerColor(int oldValue, int newValue)
+    {
+        if(isServer)
+        {
+            PlayerColor = newValue;
+        }
+        if (isClient && (oldValue != newValue))
+        {
+            UpdateColor(newValue);
+        }
+    }
+
+    private void UpdateColor(int message)
+    {
+        PlayerColor = message;
+    }
+
 }
