@@ -4,16 +4,45 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovementController : NetworkBehaviour
 {
-    public float Speed = 0.1f;
-    public GameObject PlayerModel;
+    [Header("Movement Settings")]
+    public float moveSpeed = 8f;
+    public float jumpForce = 12f;
 
-    public SpriteRenderer playerMesh;
-    public Material[] playerColors;
+    [Header("Ground Check")]
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
+
+    [Header("Wall Check")]
+    public Transform wallCheckLeft;
+    public Transform wallCheckRight;
+    public float wallCheckRadius = 0.1f;
+    private bool isTouchingWall;
+    public float wallJumpForceMultiplier = 0.7f;
+    public float maxWallSlideSpeed = -3f;
+
+    [Header("Cosmetics")]
+    public GameObject PlayerModel;
+    [SerializeField] private PlayerCosmetics playerCosmetics;
+
+    private Rigidbody2D rb;
+    private bool isGrounded;
+    private CapsuleCollider2D playerCollider;
+
+    private float coyoteTime = 0.2f;
+    private float coyoteTimeCounter;
+
 
     private void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
+        PlayerModel.SetActive(false);
+
+        rb = GetComponent<Rigidbody2D>();
+        playerCollider = GetComponent<CapsuleCollider2D>();
         PlayerModel.SetActive(false);
     }
 
@@ -21,40 +50,135 @@ public class PlayerMovementController : NetworkBehaviour
     {
         if (SceneManager.GetActiveScene().name == "Game")
         {
-            if(PlayerModel.activeSelf == false)
+            if (!PlayerModel.activeSelf)
             {
                 SetPosition();
                 PlayerModel.SetActive(true);
-                PlayerCosmeticsSetup();
+                playerCosmetics.PlayerCosmeticsSetup();
             }
 
-            if(hasAuthority) // check if its ur player
+            if (hasAuthority)
             {
+                HandleGroundCheck();
+                HandleWallCheck();
                 Movement();
             }
-
         }
     }
 
-    public void SetPosition() // spawn player
+    private void HandleGroundCheck()
     {
-        transform.position = new Vector2(Random.Range(-5, 5), Random.Range(-5, 5));
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        if (isGrounded)
+            coyoteTimeCounter = coyoteTime;
+        else
+            coyoteTimeCounter -= Time.deltaTime;
+    }
+
+    private void HandleWallCheck()
+    {
+        bool left = Physics2D.OverlapCircle(wallCheckLeft.position, wallCheckRadius, groundLayer);
+        bool right = Physics2D.OverlapCircle(wallCheckRight.position, wallCheckRadius, groundLayer);
+        isTouchingWall = left || right;
     }
 
 
-    public void Movement()
+    public void SetPosition()
     {
-        float xDirection = Input.GetAxis("Horizontal");
-        float yDirection = Input.GetAxis("Vertical");
+        int index = GetComponent<PlayerObjectController>().PlayerIdNumber;
 
-        Vector2 moveDirection = new Vector2(xDirection, yDirection);
-
-        transform.position += (Vector3)(moveDirection * Speed * Time.deltaTime);
+        Vector2 spawnPos = SpawnManager.instance.GetSpawnPosition(index);
+        transform.position = spawnPos;
     }
 
-    public void PlayerCosmeticsSetup()
+    private void Movement()
     {
-        playerMesh.material = playerColors[GetComponent<PlayerObjectController>().PlayerColor];
+        float moveInput = Input.GetAxisRaw("Horizontal");
+        float velocityX = moveInput * moveSpeed;
+
+        float boxHeight = playerCollider.bounds.size.y * 0.7f;
+        Vector2 boxSize = new Vector2(0.1f, boxHeight);
+
+        // prohibit to push yourself to a wall if stuck
+        bool pushingAgainstLeftWall = (moveInput < 0 && Physics2D.OverlapBox(wallCheckLeft.position, boxSize, 0f, groundLayer));
+        bool pushingAgainstRightWall = (moveInput > 0 && Physics2D.OverlapBox(wallCheckRight.position, boxSize, 0f, groundLayer));
+
+
+        if (pushingAgainstLeftWall || pushingAgainstRightWall)
+        {
+            velocityX = 0f;
+        }
+        
+
+        rb.velocity = new Vector2(velocityX, rb.velocity.y);
+
+        // Jump on ground OR on wall
+        if (Input.GetButtonDown("Jump") && (coyoteTimeCounter > 0f || isTouchingWall))
+        {
+            float appliedJumpForce = jumpForce;
+
+            // on wall but not touching ground : jump less effective
+            if (!isGrounded && isTouchingWall)
+            {
+                appliedJumpForce *= wallJumpForceMultiplier;
+            }
+
+            rb.velocity = new Vector2(rb.velocity.x, appliedJumpForce);
+            coyoteTimeCounter = 0f;
+        }
+
+
+        // limited slide on wall (slide instead of fall)
+        if (isTouchingWall && rb.velocity.y < maxWallSlideSpeed)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, maxWallSlideSpeed);
+        }
     }
+
+
+
+
+    private void OnDrawGizmos()
+    {
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
+
+        if (wallCheckLeft != null)
+        {
+            Gizmos.color = Color.blue;
+
+            float boxHeight = 2f; // default in case
+#if UNITY_EDITOR
+            CapsuleCollider2D col = GetComponent<CapsuleCollider2D>();
+            if (col != null)
+            {
+                boxHeight = col.bounds.size.y * 0.7f;
+            }
+#endif
+            Vector2 boxSize = new Vector2(0.1f, boxHeight);
+            Gizmos.DrawWireCube(wallCheckLeft.position, boxSize);
+        }
+
+        if (wallCheckRight != null)
+        {
+            Gizmos.color = Color.blue;
+
+            float boxHeight = 2f; // default in case
+#if UNITY_EDITOR
+            CapsuleCollider2D col = GetComponent<CapsuleCollider2D>();
+            if (col != null)
+            {
+                boxHeight = col.bounds.size.y * 0.7f;
+            }
+#endif
+            Vector2 boxSize = new Vector2(0.1f, boxHeight);
+            Gizmos.DrawWireCube(wallCheckRight.position, boxSize);
+        }
+    }
+
+
 }
-
