@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,10 +32,15 @@ public class PlayerMovementController : NetworkBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
     private CapsuleCollider2D playerCollider;
-
+    private Inputs input; 
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 
+    private void OnEnable()
+    {
+        input = new Inputs();
+        input.Enable();
+    }
 
     private void Start()
     {
@@ -94,7 +100,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void Movement()
     {
-        float moveInput = Input.GetAxisRaw("Horizontal");
+        float moveInput = input.PlayerInputs.LeftRight.ReadValue<float>();
         float velocityX = moveInput * moveSpeed;
 
         float boxHeight = playerCollider.bounds.size.y * 0.7f;
@@ -114,7 +120,7 @@ public class PlayerMovementController : NetworkBehaviour
         rb.velocity = new Vector2(velocityX, rb.velocity.y);
 
         // Jump on ground OR on wall
-        if (Input.GetButtonDown("Jump") && (coyoteTimeCounter > 0f || isTouchingWall))
+        if (input.PlayerInputs.Jump.triggered && (coyoteTimeCounter > 0f || isTouchingWall))
         {
             float appliedJumpForce = jumpForce;
 
@@ -136,7 +142,10 @@ public class PlayerMovementController : NetworkBehaviour
         }
     }
 
-
+    private void OnDisable()
+    {
+        input.Disable();
+    }
 
 
     private void OnDrawGizmos()

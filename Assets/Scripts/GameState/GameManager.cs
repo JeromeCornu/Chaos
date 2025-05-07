@@ -8,28 +8,24 @@ namespace GameState
 {
     public class GameManager : NetworkBehaviour
     {
-        private GameState gameState;
-        private Dictionary<EGameStates, GameState> gameStates = new ();
-
-        public GameState GameState => gameState;
-        
-        List<PlayerMovementController> Players;
+        private EGameStates _gameState;
+        private Dictionary<EGameStates, GameState> _gameStates = new ();
+        List<PlayerMovementController> _players;
+        public GameState GetGameState => _gameStates[_gameState];
 
         private void Init()
         {
-            //TODO : I need to know what phases are there and how many will there be 
-                        
-            gameStates[EGameStates.Fight] = new FightState();
+            _gameStates[EGameStates.Fight] = new FightState();
+            _gameStates[EGameStates.CardChoose] = new ChoosePowerUp();
+            _gameStates[EGameStates.MapEditing] = new FightState();
         }
         
         [ClientRpc]
-        public void RpcChangeState(EGameStates states)
+        public void RpcChangeState(EGameStates state)
         {
-            gameState.Disable();
-            
-            gameState = gameStates[states];
-            
-            gameState.Enable();
+            _gameStates[_gameState].Disable();
+            _gameState = state;
+            _gameStates[_gameState].Enable();
         }
         private void OnEnable()
         {
@@ -40,7 +36,7 @@ namespace GameState
         
         void Update()
         {
-            gameState.OnUpdate();
+            _gameStates[_gameState].OnUpdate();
         }
     }
 }

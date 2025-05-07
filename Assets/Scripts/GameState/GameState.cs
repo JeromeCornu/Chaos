@@ -19,6 +19,6 @@ namespace GameState
     {
         Fight,
         CardChoose,
-        PostFight,
+        MapEditing,
     }
 }
