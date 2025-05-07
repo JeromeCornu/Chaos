@@ -1,8 +1,9 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace GameState
 {
-    public abstract class GameState
+    public abstract class GameState : MonoBehaviour
     {
         protected EGameStates _gameState;
 
@@ -17,6 +18,7 @@ namespace GameState
     
     public enum EGameStates
     {
+        PreGame,
         Fight,
         CardChoose,
         MapEditing,
