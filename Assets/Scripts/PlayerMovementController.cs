@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,8 +30,8 @@ public class PlayerMovementController : NetworkBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded;
-    private CapsuleCollider2D playerCollider;
     public Inputs input; 
+    private CircleCollider2D playerCollider;
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 
@@ -48,7 +47,7 @@ public class PlayerMovementController : NetworkBehaviour
         PlayerModel.SetActive(false);
 
         rb = GetComponent<Rigidbody2D>();
-        playerCollider = GetComponent<CapsuleCollider2D>();
+        playerCollider = GetComponent<CircleCollider2D>();
         PlayerModel.SetActive(false);
     }
 
@@ -65,14 +64,6 @@ public class PlayerMovementController : NetworkBehaviour
 
             if (hasAuthority)
             {
-                if (!NetworkClient.ready)
-                    Debug.LogWarning("Client not ready.");
-
-                Debug.Log("PlayerMovementController is active and has authority!");
-
-                float moveInput = input.PlayerInputs.LeftRight.ReadValue<float>();
-                Debug.Log("Move Input: " + moveInput);
-
                 HandleGroundCheck();
                 HandleWallCheck();
                 Movement();
@@ -170,7 +161,7 @@ public class PlayerMovementController : NetworkBehaviour
 
             float boxHeight = 2f; // default in case
 #if UNITY_EDITOR
-            CapsuleCollider2D col = GetComponent<CapsuleCollider2D>();
+            CircleCollider2D col = GetComponent<CircleCollider2D>();
             if (col != null)
             {
                 boxHeight = col.bounds.size.y * 0.7f;
@@ -186,7 +177,7 @@ public class PlayerMovementController : NetworkBehaviour
 
             float boxHeight = 2f; // default in case
 #if UNITY_EDITOR
-            CapsuleCollider2D col = GetComponent<CapsuleCollider2D>();
+            CircleCollider2D col = GetComponent<CircleCollider2D>();
             if (col != null)
             {
                 boxHeight = col.bounds.size.y * 0.7f;
