@@ -12,7 +12,7 @@ public class ArmController : MonoBehaviour
 
     private void Update()
     {
-        if (!Application.isPlaying) return; // Ne tourne qu'en Play Mode
+        if (!Application.isPlaying) return;
 
         UpdateArm();
     }
@@ -27,14 +27,14 @@ public class ArmController : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         gun.rotation = Quaternion.Euler(0, 0, angle);
 
-        // Positionner le gun avec Z = 0 directement
+        // Position the gun directly with Z = 0
         gun.localPosition = new Vector3(direction.x * armLength, direction.y * armLength, 0f);
 
-        // Forcer le Z du corps aussi
+        // Force player's visual Z to stay at 0
         Vector3 bodyPos = playerBody.localPosition;
         playerBody.localPosition = new Vector3(bodyPos.x, bodyPos.y, 0f);
 
-        // Flip horizontal du joueur et éventuel flip du gun (si visuel)
+        // Flip player horizontally and optionally the gun (visually)
         if (direction.x < 0)
         {
             gun.localScale = new Vector3(1, -1, 1);
@@ -49,7 +49,7 @@ public class ArmController : MonoBehaviour
     {
         if (gun == null || playerBody == null) return;
 
-        // Simule la direction souris même en mode éditeur
+        // Simulate aim direction in editor mode
         Vector3 mouseWorld = Camera.main != null ?
             Camera.main.ScreenToWorldPoint(Input.mousePosition) :
             transform.position + transform.right;
@@ -57,13 +57,12 @@ public class ArmController : MonoBehaviour
 
         Vector3 direction = (mouseWorld - transform.position).normalized;
 
-        // Déplace localement le gun
+        // Move the gun visually in the editor
         gun.localPosition = direction * armLength;
 
-        // Affiche visuellement la ligne du bras
+        // Display the arm line in the Scene view
         Gizmos.color = Color.magenta;
         Gizmos.DrawLine(transform.position, gun.position);
         Gizmos.DrawSphere(gun.position, 0.05f);
     }
-
 }
