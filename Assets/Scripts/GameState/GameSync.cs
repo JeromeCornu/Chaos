@@ -14,6 +14,7 @@ public class GameSync : NetworkBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {

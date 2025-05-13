@@ -1,10 +1,10 @@
 namespace GameState
 {
-    public class MapEditing : GameState
+    public class ChoosePowerUp : GameState
     {
-        public MapEditing()
+        public ChoosePowerUp(GameManager manager) : base( manager )
         {
-            _gameState = EGameStates.MapEditing;
+            _gameState = EGameStates.CardChoose;
         }
 
         public override void Enable()

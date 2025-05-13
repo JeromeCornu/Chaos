@@ -1,78 +1,115 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using DefaultNamespace;
 using Mirror;
+using UnityEngine;
 
 namespace GameState
 {
     public class GameManager : NetworkBehaviour
     {
-        private EGameStates _gameState;
-        private Dictionary<EGameStates, GameState> _gameStates = new ();
-        List<PlayerMovementController> _players;
-        
         public static GameManager Instance;
-        public GameState GetGameState => _gameStates[_gameState];
+
+        private Dictionary<EGameStates, GameState> _gameStates = new();
+        public List<EGameStates> GameLoop { get; private set; }
+
+        private int _currentIndex = 0;
+        public EGameStates CurrentStateKey => GameLoop[_currentIndex];
+        public GameState CurrentGameState => _gameStates[CurrentStateKey];
+
+        private bool _isInitialized; 
 
         private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
+                DontDestroyOnLoad(gameObject);
             }
             else
             {
                 Destroy(gameObject);
             }
         }
-        
+
         private void Init()
         {
-            _gameStates[EGameStates.Fight] = new FightState();
-            _gameStates[EGameStates.CardChoose] = new ChoosePowerUp();
-            _gameStates[EGameStates.MapEditing] = new FightState();
+            _gameStates = new Dictionary<EGameStates, GameState>
+            {
+                { EGameStates.PreGame, new PreGameState(this) },
+                { EGameStates.Fight, new FightState(this) },
+                { EGameStates.CardChoose, new ChoosePowerUp(this) },
+                { EGameStates.MapEditing, new FightState(this) }
+            };
+
+            GameLoop = new List<EGameStates>
+            {
+                EGameStates.PreGame,
+                EGameStates.Fight,
+                EGameStates.CardChoose,
+                EGameStates.MapEditing
+            };
+
+            _currentIndex = 0;
+            
+            _isInitialized = true;
         }
 
         public override void OnStartClient()
         {
             base.OnStartClient();
-            if (isLocalPlayer)
-            {
-                StartCoroutine(NotifyServerReady());
-            }
-        }
-        
-        public void StartStateMachine()
-        {
-            Init();
-            if(isServer)
-                RpcChangeState(EGameStates.PreGame);
+            StartCoroutine(NotifyServerReady());
         }
         
         private IEnumerator NotifyServerReady()
         {
             yield return null;
-            CmdPlayerSceneReady();
+            LobbyController.Instance.LocalPlayerObject.GetComponent<ClientToServerComands>().NotifyServerReady();
         }
-        
-        [Command]
-        private void CmdPlayerSceneReady()
+
+        public void StartStateMachine()
         {
-            GameSync.Instance.PlayerReady(connectionToClient);
+            Init();
+            RpcChangeState(GameLoop[_currentIndex]);
         }
-                
-        [ClientRpc] 
-        private void RpcChangeState(EGameStates state) 
-        {
-            _gameStates[_gameState].Disable();
-            _gameState = state;
-            _gameStates[_gameState].Enable();
+
+        public void GoToNextState()
+        { 
+            RpcChangeState(GetNextStateKey());
         }
-        void Update()
+
+        public void GoToPreviousState()
         {
-            _gameStates[_gameState].OnUpdate();
+            RpcChangeState(GetPreviousStateKey());
+        }
+
+        private EGameStates GetNextStateKey() =>
+            GameLoop[(_currentIndex + 1) % GameLoop.Count];
+
+        public GameState GetNextGameState() =>
+            _gameStates[GetNextStateKey()];
+
+        private EGameStates GetPreviousStateKey() =>
+            GameLoop[(_currentIndex - 1 + GameLoop.Count) % GameLoop.Count];
+
+        public GameState GetPreviousGameState() =>
+            _gameStates[GetPreviousStateKey()];
+
+        [ClientRpc]
+        private void RpcChangeState(EGameStates newState)
+        {
+            CurrentGameState.Disable();
+            _currentIndex = GameLoop.IndexOf(newState);
+            CurrentGameState.Enable();
+        }
+
+        private void Update()
+        {
+            if (_isInitialized && _gameStates.ContainsKey(CurrentStateKey))
+            {
+                _gameStates[CurrentStateKey].OnUpdate();
+            }
         }
     }
 }
-
-
-

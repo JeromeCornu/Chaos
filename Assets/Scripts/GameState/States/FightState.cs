@@ -8,14 +8,14 @@ namespace GameState
 
         public GameObject Winner;
         
-        public FightState() 
+        public FightState(GameManager manager) : base( manager )
         {
             _gameState = EGameStates.Fight;
         }
 
         public override void Enable()
         {
-            Winner.gameObject.GetComponent<PlayerMovementController>();
+            var temp = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
         }
 
         public override void OnUpdate()

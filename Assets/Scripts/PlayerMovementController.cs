@@ -32,7 +32,7 @@ public class PlayerMovementController : NetworkBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
     private CapsuleCollider2D playerCollider;
-    private Inputs input; 
+    public Inputs input; 
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 

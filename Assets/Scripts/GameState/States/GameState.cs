@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace GameState
 {
-    public abstract class GameState : MonoBehaviour
+    public abstract class GameState
     {
         protected EGameStates _gameState;
+        protected GameManager _gameManager;
+
+        protected GameState(GameManager gameManager)
+        {
+            _gameManager = gameManager;
+        }
 
         public EGameStates GameState1 => _gameState;
 
