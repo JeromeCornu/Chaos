@@ -70,11 +70,20 @@ public class PlayerMovementController : NetworkBehaviour
             }
         }
     }
-    
+
     public void ToggleRbState(bool value)
     {
-        rb.constraints = value ? RigidbodyConstraints2D.FreezeAll : RigidbodyConstraints2D.FreezeRotation;
+        if (value)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+        else
+        {
+            rb.constraints = RigidbodyConstraints2D.None;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
     }
+
 
     private void HandleGroundCheck()
     {
