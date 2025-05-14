@@ -15,6 +15,7 @@ namespace GameState
 
         public override void Enable()
         {
+            Debug.Log("Start pre game state");
             _gameManager.StartCoroutine(Countdown());
             player = LobbyController.Instance.LocalPlayerObject;
             
@@ -37,6 +38,7 @@ namespace GameState
 
         public override void Disable()
         {
+            Debug.Log("End pre game state");
             LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>().input.Enable();
         }
     }
