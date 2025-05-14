@@ -91,7 +91,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void SetPosition()
     {
-        int index = GetComponent<PlayerObjectController>().PlayerIdNumber;
+        int index = GetComponent<PlayerObjectController>().PlayerIdNumber - 1;
 
         Vector2 spawnPos = SpawnManager.instance.GetSpawnPosition(index);
         transform.position = spawnPos;
