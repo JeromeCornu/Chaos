@@ -20,7 +20,7 @@ namespace GameState
             _gameManager.StartCoroutine(Countdown());
             playerMovementController = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
 
-            playerMovementController.ToggleRbState(false);
+            playerMovementController.FreezePlayer(true);
             playerMovementController.input.Disable();
             playerMovementController.SetPosition();
         }
@@ -41,7 +41,7 @@ namespace GameState
             Debug.Log("End pre game state");
             if (playerMovementController == null) return;
             playerMovementController.input.Enable();
-            playerMovementController.ToggleRbState(true);
+            playerMovementController.FreezePlayer(false);
         }
     }
 }

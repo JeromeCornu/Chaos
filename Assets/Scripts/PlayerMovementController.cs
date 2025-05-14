@@ -71,7 +71,7 @@ public class PlayerMovementController : NetworkBehaviour
         }
     }
 
-    public void ToggleRbState(bool value)
+    public void FreezePlayer(bool value)
     {
         if (value)
         {
