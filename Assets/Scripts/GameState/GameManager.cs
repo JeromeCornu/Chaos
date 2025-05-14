@@ -74,17 +74,17 @@ namespace GameState
         public void StartStateMachine()
         {
             Init();
-            RpcChangeState(GameLoop[_currentIndex]);
+            ChangeState(GameLoop[_currentIndex]);
         }
 
         public void GoToNextState()
         { 
-            RpcChangeState(GetNextStateKey());
+            ChangeState(GetNextStateKey());
         }
 
         public void GoToPreviousState()
         {
-            RpcChangeState(GetPreviousStateKey());
+            ChangeState(GetPreviousStateKey());
         }
 
         private EGameStates GetNextStateKey() =>
@@ -99,8 +99,25 @@ namespace GameState
         public GameState GetPreviousGameState() =>
             _gameStates[GetPreviousStateKey()];
 
+        private void ChangeState(EGameStates newState)
+        {
+            if (isServer)
+            {
+                RpcChangeState_Server(newState);
+            }
+            else
+            {
+                ChangeState_Client(newState);
+            }
+        }
+        
         [ClientRpc]
-        private void RpcChangeState(EGameStates newState)
+        private void RpcChangeState_Server(EGameStates newState)
+        {
+            ChangeState_Client(newState);
+        }
+
+        private void ChangeState_Client(EGameStates newState)
         {
             CurrentGameState.Disable();
             _currentIndex = GameLoop.IndexOf(newState);
