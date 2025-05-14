@@ -73,7 +73,7 @@ public class PlayerMovementController : NetworkBehaviour
     
     public void ToggleRbState(bool value)
     {
-        rb.isKinematic = value;
+        rb.constraints = value ? RigidbodyConstraints2D.FreezeAll : RigidbodyConstraints2D.FreezeRotation;
     }
 
     private void HandleGroundCheck()
