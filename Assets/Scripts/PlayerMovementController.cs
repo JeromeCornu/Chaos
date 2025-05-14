@@ -71,9 +71,9 @@ public class PlayerMovementController : NetworkBehaviour
         }
     }
     
-    public void ToggleRbState(bool canMove)
+    public void ToggleRbState(bool value)
     {
-        rb.isKinematic = canMove;
+        rb.isKinematic = value;
     }
 
     private void HandleGroundCheck()

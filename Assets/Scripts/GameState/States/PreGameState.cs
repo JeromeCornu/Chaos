@@ -18,8 +18,8 @@ namespace GameState
         {
             Debug.Log("Start pre game state");
             _gameManager.StartCoroutine(Countdown());
-            PlayerMovementController playerMovementController = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
-            
+            playerMovementController = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
+
             playerMovementController.ToggleRbState(false);
             playerMovementController.input.Disable();
             playerMovementController.SetPosition();
