@@ -6,6 +6,8 @@ namespace GameState
 {
     public class PreGameState : GameState
     {
+        GameObject player;
+        
         public PreGameState(GameManager manager) : base( manager )
         {
             _gameState = EGameStates.PreGame;
@@ -14,7 +16,12 @@ namespace GameState
         public override void Enable()
         {
             _gameManager.StartCoroutine(Countdown());
-            LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>().input.Disable();
+            player = LobbyController.Instance.LocalPlayerObject;
+            
+            PlayerMovementController playerMovementController = player.GetComponent<PlayerMovementController>();
+            
+            playerMovementController.input.Disable();
+            playerMovementController.SetPosition();
         }
 
         private IEnumerator Countdown()
