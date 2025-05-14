@@ -105,7 +105,6 @@ namespace GameState
             {
                 RpcChangeState_Server(newState);
             }
-            ChangeState_Client(newState);
         }
         
         [ClientRpc]
