@@ -39,7 +39,8 @@ namespace GameState
         public override void Disable()
         {
             Debug.Log("End pre game state");
-            LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>().input.Enable();
+            if (playerMovementController == null) return;
+            playerMovementController.input.Enable();
             playerMovementController.ToggleRbState(true);
         }
     }
