@@ -6,7 +6,8 @@ namespace GameState
 {
     public class PreGameState : GameState
     {
-        GameObject player;
+        
+        private PlayerMovementController playerMovementController;
         
         public PreGameState(GameManager manager) : base( manager )
         {
@@ -17,10 +18,9 @@ namespace GameState
         {
             Debug.Log("Start pre game state");
             _gameManager.StartCoroutine(Countdown());
-            player = LobbyController.Instance.LocalPlayerObject;
+            PlayerMovementController playerMovementController = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
             
-            PlayerMovementController playerMovementController = player.GetComponent<PlayerMovementController>();
-            
+            playerMovementController.ToggleRbState(false);
             playerMovementController.input.Disable();
             playerMovementController.SetPosition();
         }
@@ -40,6 +40,7 @@ namespace GameState
         {
             Debug.Log("End pre game state");
             LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>().input.Enable();
+            playerMovementController.ToggleRbState(true);
         }
     }
 }
