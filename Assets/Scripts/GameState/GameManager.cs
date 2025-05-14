@@ -35,6 +35,8 @@ namespace GameState
 
         private void Init()
         {
+            if (_isInitialized) return;
+            
             _gameStates = new Dictionary<EGameStates, GameState>
             {
                 { EGameStates.PreGame, new PreGameState(this) },
@@ -59,6 +61,7 @@ namespace GameState
         public override void OnStartClient()
         {
             base.OnStartClient();
+            Init();
             StartCoroutine(NotifyServerReady());
         }
         
