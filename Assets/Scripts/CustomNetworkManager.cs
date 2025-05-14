@@ -4,12 +4,18 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.SceneManagement;
 using Steamworks;
+using UnityEngine.Serialization;
 
 public class CustomNetworkManager : NetworkManager
 {
     [SerializeField] private PlayerObjectController GamePlayerPrefab;
     public List<PlayerObjectController> GamePlayers { get; } = new List<PlayerObjectController>();
+    [SerializeField] private NetworkIdentity gameManager;
 
+    [Header("Custom Prefabs")]
+    public GameObject gameManagerPrefab;
+
+    private GameObject gameManagerInstance;
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
@@ -24,9 +30,31 @@ public class CustomNetworkManager : NetworkManager
         }
     }
 
+    public override void OnServerSceneChanged(string sceneName)
+    {
+        base.OnServerSceneChanged(sceneName);
+        
+        // Check if this is the gameplay scene
+        if (sceneName == "Game")
+        {
+            // Spawn GameManager only once
+            if (gameManagerInstance == null)
+            {
+                gameManagerInstance = Instantiate(gameManagerPrefab);
+                NetworkServer.Spawn(gameManagerInstance);
+            }
+        }
+    }
+    
     public void StartGame(string SceneName)
     {
         ServerChangeScene(SceneName);
+    }
+    
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        gameManagerInstance = null;
     }
 
 }

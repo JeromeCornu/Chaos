@@ -58,6 +58,12 @@ public class LobbyController : MonoBehaviour
 
     public void UpdatePlayerList()
     {
+        if (PlayerListViewContent == null)
+        {
+            Debug.LogWarning("UpdatePlayerList skipped: UI is not active.");
+            return;
+        }
+        
         if (!PlayerItemCreated) { CreateHostPlayerItem(); } // Host
         if (PlayerListItems.Count < Manager.GamePlayers.Count) { CreateClientPlayerItem(); }
         if (PlayerListItems.Count > Manager.GamePlayers.Count) { RemovePlayerItem(); }
