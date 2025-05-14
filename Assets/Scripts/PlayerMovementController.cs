@@ -65,6 +65,14 @@ public class PlayerMovementController : NetworkBehaviour
 
             if (hasAuthority)
             {
+                if (!NetworkClient.ready)
+                    Debug.LogWarning("Client not ready.");
+
+                Debug.Log("PlayerMovementController is active and has authority!");
+
+                float moveInput = input.PlayerInputs.LeftRight.ReadValue<float>();
+                Debug.Log("Move Input: " + moveInput);
+
                 HandleGroundCheck();
                 HandleWallCheck();
                 Movement();
