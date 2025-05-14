@@ -54,7 +54,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == "Game")
+        if (SceneManager.GetActiveScene().name == "Game" && NetworkClient.ready)
         {
             if (!PlayerModel.activeSelf)
             {

@@ -67,6 +67,7 @@ namespace GameState
         
         private IEnumerator NotifyServerReady()
         {
+            yield return new WaitWhile(() => NetworkClient.ready);
             yield return null;
             LobbyController.Instance.LocalPlayerObject.GetComponent<ClientToServerComands>().NotifyServerReady();
         }
