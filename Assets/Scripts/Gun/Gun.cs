@@ -1,15 +1,16 @@
-#if UNITY_EDITOR
-using Mirror;
-using System.Collections;
-using UnityEditor;
-#endif
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
+using Mirror;
 
 public class Gun : MonoBehaviour
 {
     public Transform firePoint;
     public GameObject bulletPrefab;
+    public GameObject bulletUIPrefab;
     public GunStats stats = new GunStats();
+    private Coroutine reloadCoroutine;
 
     private int currentAmmo;
     private float fireCooldown;
@@ -17,26 +18,44 @@ public class Gun : MonoBehaviour
     public float autoReloadDelay = 2f;
     private float timeSinceLastShot = 0f;
 
+    // UI elements
+    public Image reloadCircle;
+    public GameObject bulletsDisplay; // container holding all bullet icons
+    private List<GameObject> bulletIcons = new List<GameObject>();
 
-    void Start()
+    private void Start()
     {
         currentAmmo = stats.magazineSize;
+
+        // Instantiate bullet icons into the container
+        for (int i = 0; i < stats.magazineSize; i++)
+        {
+            GameObject icon = Instantiate(bulletUIPrefab, bulletsDisplay.transform);
+            bulletIcons.Add(icon);
+        }
+
+        // Initialize UI state
+        reloadCircle.fillAmount = 0f;
+        reloadCircle.gameObject.SetActive(false);
+        bulletsDisplay.SetActive(true);
+
+        UpdateAmmoDisplay(currentAmmo);
     }
 
-    void Update()
+    private void Update()
     {
         if (isReloading) return;
 
         fireCooldown -= Time.deltaTime;
         timeSinceLastShot += Time.deltaTime;
 
+        // Trigger auto-reload after delay if not at full ammo
         if (currentAmmo < stats.magazineSize && timeSinceLastShot >= autoReloadDelay)
         {
-            StartCoroutine(Reload());
+            reloadCoroutine = StartCoroutine(Reload());
             Debug.Log("Auto reload triggered");
         }
     }
-
 
     public bool TryFireLocal(out Vector3 pos, out Quaternion rot)
     {
@@ -44,42 +63,91 @@ public class Gun : MonoBehaviour
         float spread = Random.Range(-stats.spreadAngle, stats.spreadAngle);
         rot = firePoint.rotation * Quaternion.Euler(0, 0, spread);
 
-        if (currentAmmo <= 0 || isReloading || fireCooldown > 0f)
+        if (currentAmmo <= 0 || fireCooldown > 0f)
             return false;
 
         fireCooldown = stats.fireRate;
         currentAmmo--;
+        timeSinceLastShot = 0f;
 
-        timeSinceLastShot = 0f; // reset timer
+        // If reload is in progress, cancel it
+        if (reloadCoroutine != null)
+        {
+            StopCoroutine(reloadCoroutine);
+            reloadCoroutine = null;
+            isReloading = false;
 
+            // Only hide the reload UI if it was visible
+            if (reloadCircle.gameObject.activeSelf)
+            {
+                reloadCircle.gameObject.SetActive(false);
+                bulletsDisplay.SetActive(true);
+            }
+
+            Debug.Log("Reload cancelled due to firing");
+        }
+
+        UpdateAmmoDisplay(currentAmmo);
         return true;
     }
 
-
     public void ShootBullet(Vector3 position, Quaternion rotation)
     {
-        Debug.Log("ShootBullet called at position: " + position);
-
         GameObject bullet = Instantiate(bulletPrefab, position, rotation);
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.Init(stats);
         NetworkServer.Spawn(bullet);
     }
 
-
-    public void StartReload()
-    {
-        if (!isReloading)
-            StartCoroutine(Reload());
-    }
-
-    IEnumerator Reload()
+    public IEnumerator Reload()
     {
         isReloading = true;
-        yield return new WaitForSeconds(stats.reloadTime);
-        Debug.Log("gun reloaded!");
+
+        // Only show the reload UI if ammo is empty
+        bool showReloadUI = currentAmmo == 0;
+
+        if (showReloadUI)
+        {
+            bulletsDisplay.SetActive(false);
+            reloadCircle.fillAmount = 0f;
+            reloadCircle.gameObject.SetActive(true);
+        }
+
+        float elapsed = 0f;
+        float reloadTime = stats.reloadTime;
+
+        while (elapsed < reloadTime)
+        {
+            elapsed += Time.deltaTime;
+
+            if (showReloadUI)
+                reloadCircle.fillAmount = Mathf.Clamp01(elapsed / reloadTime);
+
+            yield return null;
+        }
+
         currentAmmo = stats.magazineSize;
         isReloading = false;
+        reloadCoroutine = null;
+
+        if (showReloadUI)
+        {
+            reloadCircle.gameObject.SetActive(false);
+            bulletsDisplay.SetActive(true);
+        }
+
+        UpdateAmmoDisplay(currentAmmo);
+        Debug.Log("Gun reloaded!");
+    }
+
+    public int GetCurrentAmmo() => currentAmmo;
+
+    public void UpdateAmmoDisplay(int ammo)
+    {
+        for (int i = 0; i < bulletIcons.Count; i++)
+        {
+            bulletIcons[i].SetActive(i < ammo);
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -92,7 +160,6 @@ public class Gun : MonoBehaviour
 
         for (int i = 0; i < stats.bulletsPerShot; i++)
         {
-            // random spread
             float spread = Random.Range(-stats.spreadAngle, stats.spreadAngle);
             Quaternion spreadRotation = Quaternion.Euler(0, 0, spread);
             Vector3 direction = spreadRotation * firePoint.right;
@@ -112,5 +179,4 @@ public class Gun : MonoBehaviour
             }
         }
     }
-
 }
