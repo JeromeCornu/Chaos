@@ -9,6 +9,9 @@ public class PlayerCombatController : NetworkBehaviour
     [SyncVar(hook = nameof(OnAmmoChanged))]
     private int syncedAmmo;
 
+    [SyncVar(hook = nameof(OnReloadingChanged))]
+    private bool isReloading;
+
     private void Update()
     {
         if (!hasAuthority || gun == null) return;
@@ -26,16 +29,34 @@ public class PlayerCombatController : NetworkBehaviour
                 CmdShoot(pos, rot);
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            StartCoroutine(ReloadAndSync());
-        }
     }
 
     private void OnAmmoChanged(int oldValue, int newValue)
     {
         gun?.UpdateAmmoDisplay(newValue);
+    }
+
+    private void OnReloadingChanged(bool oldValue, bool newValue)
+    {
+        if (gun != null)
+        {
+            if (gun.GetCurrentAmmo() == 0)
+                gun.SetReloadUIVisible(newValue);
+            else
+                gun.SetReloadUIVisible(false); // keep bullet icons visible
+        }
+    }
+
+    [Command]
+    public void CmdUpdateAmmo(int value)
+    {
+        syncedAmmo = value;
+    }
+
+    [Command]
+    public void CmdSetReloading(bool value)
+    {
+        isReloading = value;
     }
 
 

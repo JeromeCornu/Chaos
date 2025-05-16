@@ -6,6 +6,8 @@ using Mirror;
 
 public class Gun : MonoBehaviour
 {
+    public PlayerCombatController combatController;
+
     public Transform firePoint;
     public GameObject bulletPrefab;
     public GameObject bulletUIPrefab;
@@ -68,6 +70,12 @@ public class Gun : MonoBehaviour
 
         fireCooldown = stats.fireRate;
         currentAmmo--;
+
+        if (combatController != null && combatController.hasAuthority)
+        {
+            combatController.CmdUpdateAmmo(currentAmmo);
+        }
+
         timeSinceLastShot = 0f;
 
         // If reload is in progress, cancel it
@@ -103,16 +111,11 @@ public class Gun : MonoBehaviour
     {
         isReloading = true;
 
-        // Only show the reload UI if ammo is empty
+        // notify others via SyncVar
+        if (combatController != null && combatController.hasAuthority)
+            combatController.CmdSetReloading(true);
+
         bool showReloadUI = currentAmmo == 0;
-
-        if (showReloadUI)
-        {
-            bulletsDisplay.SetActive(false);
-            reloadCircle.fillAmount = 0f;
-            reloadCircle.gameObject.SetActive(true);
-        }
-
         float elapsed = 0f;
         float reloadTime = stats.reloadTime;
 
@@ -130,6 +133,12 @@ public class Gun : MonoBehaviour
         isReloading = false;
         reloadCoroutine = null;
 
+        if (combatController != null && combatController.hasAuthority)
+        {
+            combatController.CmdUpdateAmmo(currentAmmo);
+            combatController.CmdSetReloading(false);
+        }
+
         if (showReloadUI)
         {
             reloadCircle.gameObject.SetActive(false);
@@ -140,6 +149,7 @@ public class Gun : MonoBehaviour
         Debug.Log("Gun reloaded!");
     }
 
+
     public int GetCurrentAmmo() => currentAmmo;
 
     public void UpdateAmmoDisplay(int ammo)
@@ -149,6 +159,22 @@ public class Gun : MonoBehaviour
             bulletIcons[i].SetActive(i < ammo);
         }
     }
+
+    public void SetReloadUIVisible(bool show)
+    {
+        if (show)
+        {
+            bulletsDisplay.SetActive(false);
+            reloadCircle.fillAmount = 0f;
+            reloadCircle.gameObject.SetActive(true);
+        }
+        else
+        {
+            reloadCircle.gameObject.SetActive(false);
+            bulletsDisplay.SetActive(true);
+        }
+    }
+
 
     private void OnDrawGizmosSelected()
     {
