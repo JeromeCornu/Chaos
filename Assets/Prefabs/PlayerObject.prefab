@@ -530,6 +530,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   gun: {fileID: 4339761740963513867}
+  armController: {fileID: 3815691628504453746}
 --- !u!114 &2674309731372330001
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,10 +1,12 @@
 using UnityEngine;
 using Mirror;
 using System.Collections;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerCombatController : NetworkBehaviour
 {
     public Gun gun;
+    public ArmController armController;
 
     [SyncVar(hook = nameof(OnAmmoChanged))]
     private int syncedAmmo;
@@ -12,11 +14,21 @@ public class PlayerCombatController : NetworkBehaviour
     [SyncVar(hook = nameof(OnReloadingChanged))]
     private bool isReloading;
 
+    [SyncVar(hook = nameof(OnAimDirectionChanged))]
+    private Vector2 syncedAimDirection;
+
+
     private void Update()
     {
         if (!hasAuthority || gun == null) return;
 
         HandleFireInput();
+
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorld.z = 0f;
+        Vector2 dir = (mouseWorld - transform.position).normalized;
+        CmdSendAimDirection(dir);
+
     }
 
     private void HandleFireInput()
@@ -47,6 +59,13 @@ public class PlayerCombatController : NetworkBehaviour
         }
     }
 
+    private void OnAimDirectionChanged(Vector2 oldDir, Vector2 newDir)
+    {
+        if (armController != null)
+            armController.SetAimDirection(newDir);
+    }
+
+
     [Command]
     public void CmdUpdateAmmo(int value)
     {
@@ -59,11 +78,10 @@ public class PlayerCombatController : NetworkBehaviour
         isReloading = value;
     }
 
-
-    private IEnumerator ReloadAndSync()
+    [Command]
+    private void CmdSendAimDirection(Vector2 dir)
     {
-        yield return StartCoroutine(gun.Reload());
-        syncedAmmo = gun.GetCurrentAmmo();
+        syncedAimDirection = dir;
     }
 
 
