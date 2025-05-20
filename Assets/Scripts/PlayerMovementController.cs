@@ -75,12 +75,11 @@ public class PlayerMovementController : NetworkBehaviour
     {
         if (value)
         {
-            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+            rb.Sleep();
         }
         else
         {
-            rb.constraints = RigidbodyConstraints2D.None;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.WakeUp();
         }
     }
 
