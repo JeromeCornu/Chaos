@@ -17,8 +17,6 @@ public class PlayerCombatController : NetworkBehaviour
     [SyncVar(hook = nameof(OnAimDirectionChanged))]
     private Vector2 syncedAimDirection;
 
-    private Vector2 lastSentDirection;
-
 
     private void Update()
     {
@@ -29,34 +27,9 @@ public class PlayerCombatController : NetworkBehaviour
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0f;
         Vector2 dir = (mouseWorld - transform.position).normalized;
+        CmdSendAimDirection(dir);
 
-        // Apply direction immediately on local player
-        if (armController != null)
-        {
-            armController.isOwner = true;
-            armController.SetAimDirection(dir);
-        }
-
-        // Send to server only if direction has changed enough
-        if (Vector2.Angle(lastSentDirection, dir) > 1f)
-        {
-            CmdSendAimDirection(dir);
-            lastSentDirection = dir;
-        }
     }
-
-
-    [ClientRpc]
-    private void RpcSetAimDirection(Vector2 dir)
-    {
-        if (!hasAuthority && armController != null)
-        {
-            armController.isOwner = false;
-            armController.SetAimDirection(dir);
-        }
-    }
-
-
 
     private void HandleFireInput()
     {
@@ -89,13 +62,8 @@ public class PlayerCombatController : NetworkBehaviour
     private void OnAimDirectionChanged(Vector2 oldDir, Vector2 newDir)
     {
         if (armController != null)
-        {
-            armController.isOwner = hasAuthority; 
             armController.SetAimDirection(newDir);
-        }
     }
-
-
 
     public void HandleDeath()
     {
@@ -120,9 +88,7 @@ public class PlayerCombatController : NetworkBehaviour
     private void CmdSendAimDirection(Vector2 dir)
     {
         syncedAimDirection = dir;
-        RpcSetAimDirection(dir); 
     }
-
 
 
     [Command]
