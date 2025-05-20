@@ -14,6 +14,7 @@ public class ArmController : MonoBehaviour
     public void SetAimDirection(Vector2 direction)
     {
         currentDirection = direction;
+        // Debug.Log($"[ArmController] Aim updated: {direction}, isOwner={isOwner}");
 
         // If this is the local player, apply direction instantly (no interpolate)
         if (isOwner)

@@ -30,14 +30,22 @@ public class PlayerCombatController : NetworkBehaviour
         mouseWorld.z = 0f;
         Vector2 dir = (mouseWorld - transform.position).normalized;
 
-        // only change if its not the same direction
+        // Apply direction immediately on local player
+        if (armController != null)
+        {
+            armController.isOwner = true;
+            armController.SetAimDirection(dir);
+        }
+
+        // Send to server only if direction has changed enough
         if (Vector2.Angle(lastSentDirection, dir) > 1f)
         {
             CmdSendAimDirection(dir);
             lastSentDirection = dir;
         }
-
     }
+
+
 
     private void HandleFireInput()
     {
@@ -71,10 +79,11 @@ public class PlayerCombatController : NetworkBehaviour
     {
         if (armController != null)
         {
-            armController.isOwner = hasAuthority;
+            armController.isOwner = hasAuthority; 
             armController.SetAimDirection(newDir);
         }
     }
+
 
 
     public void HandleDeath()
