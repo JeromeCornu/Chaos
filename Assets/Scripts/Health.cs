@@ -55,6 +55,11 @@ public class Health : NetworkBehaviour
 
     void HandleDeathServer()
     {
+        if (NetworkServer.connections.Count < 2){
+            Debug.Log("ALONE, LOL Get Some Friends");
+            return;
+        }
+
         CustomNetworkManager customNetworkManager = (CustomNetworkManager)CustomNetworkManager.singleton;
         
         if (combatController.gameObject == customNetworkManager.GamePlayers[0].gameObject)
