@@ -17,6 +17,8 @@ public class PlayerCombatController : NetworkBehaviour
     [SyncVar(hook = nameof(OnAimDirectionChanged))]
     private Vector2 syncedAimDirection;
 
+    private Vector2 lastSentDirection;
+
 
     private void Update()
     {
@@ -27,7 +29,13 @@ public class PlayerCombatController : NetworkBehaviour
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0f;
         Vector2 dir = (mouseWorld - transform.position).normalized;
-        CmdSendAimDirection(dir);
+
+        // only change if its not the same direction
+        if (Vector2.Angle(lastSentDirection, dir) > 1f)
+        {
+            CmdSendAimDirection(dir);
+            lastSentDirection = dir;
+        }
 
     }
 
@@ -62,8 +70,12 @@ public class PlayerCombatController : NetworkBehaviour
     private void OnAimDirectionChanged(Vector2 oldDir, Vector2 newDir)
     {
         if (armController != null)
+        {
+            armController.isOwner = hasAuthority;
             armController.SetAimDirection(newDir);
+        }
     }
+
 
     public void HandleDeath()
     {
