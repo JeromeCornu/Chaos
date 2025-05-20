@@ -18,7 +18,9 @@ namespace GameState
         public EGameStates CurrentStateKey => GameLoop[_currentIndex];
         public GameState CurrentGameState => _gameStates[CurrentStateKey];
 
-        private bool _isInitialized; 
+        private bool _isInitialized;
+
+        public Dictionary<EGameStates, GameState> GameStates => _gameStates;
 
         private void Awake()
         {

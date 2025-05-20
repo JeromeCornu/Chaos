@@ -68,9 +68,8 @@ public class PlayerCombatController : NetworkBehaviour
     public void HandleDeath()
     {
         Debug.Log("You are dead");
-        // TODO
+        
     }
-
 
     [Command]
     public void CmdUpdateAmmo(int value)

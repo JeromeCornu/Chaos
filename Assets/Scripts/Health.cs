@@ -1,3 +1,4 @@
+using GameState;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
@@ -28,7 +29,8 @@ public class Health : NetworkBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            RpcHandleDeath();
+            HandleDeath();
+            HandleDeathServer();
         }
     }
 
@@ -43,11 +45,23 @@ public class Health : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcHandleDeath()
+    void HandleDeath()
     {
         if (combatController != null)
         {
             combatController.HandleDeath();
         }
+    }
+
+    void HandleDeathServer()
+    {
+        CustomNetworkManager customNetworkManager = (CustomNetworkManager)CustomNetworkManager.singleton;
+        
+        if (combatController.gameObject == customNetworkManager.GamePlayers[0].gameObject)
+        {
+            ((FightState)GameManager.Instance.GameStates[EGameStates.Fight]).Winner = customNetworkManager.GamePlayers[1].gameObject;
+        }
+        
+        GameManager.Instance.GoToNextState();
     }
 }
