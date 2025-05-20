@@ -7,22 +7,42 @@ public class ArmController : MonoBehaviour
     public float armLength = 1f;
 
     private Vector2 currentDirection = Vector2.right;
+    private Vector2 smoothedDirection = Vector2.right;
+    private bool isLocal = false;
 
-    public void SetAimDirection(Vector2 direction)
+    public void SetAimDirection(Vector2 direction, bool isLocalPlayer)
     {
         currentDirection = direction;
-        UpdateArm();
+        isLocal = isLocalPlayer;
+
+        if (isLocal)
+        {
+            smoothedDirection = currentDirection;
+            UpdateArm(smoothedDirection);
+        }
     }
 
-    private void UpdateArm()
+    private void LateUpdate()
     {
-        float angle = Mathf.Atan2(currentDirection.y, currentDirection.x) * Mathf.Rad2Deg;
+        if (!Application.isPlaying) return;
+
+        // For remote players, smooth the arm direction
+        if (!isLocal)
+        {
+            smoothedDirection = Vector2.Lerp(smoothedDirection, currentDirection, Time.deltaTime * 20f);
+            UpdateArm(smoothedDirection);
+        }
+    }
+
+    private void UpdateArm(Vector2 dir)
+    {
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         gun.rotation = Quaternion.Euler(0, 0, angle);
-        gun.localPosition = new Vector3(currentDirection.x * armLength, currentDirection.y * armLength, 0f);
+        gun.localPosition = new Vector3(dir.x * armLength, dir.y * armLength, 0f);
 
         Vector3 bodyPos = playerBody.localPosition;
         playerBody.localPosition = new Vector3(bodyPos.x, bodyPos.y, 0f);
 
-        gun.localScale = currentDirection.x < 0 ? new Vector3(1, -1, 1) : new Vector3(1, 1, 1);
+        gun.localScale = dir.x < 0 ? new Vector3(1, -1, 1) : new Vector3(1, 1, 1);
     }
 }

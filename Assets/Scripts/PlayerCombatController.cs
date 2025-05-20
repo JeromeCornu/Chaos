@@ -18,18 +18,29 @@ public class PlayerCombatController : NetworkBehaviour
     private Vector2 syncedAimDirection;
 
 
+    private Vector2 lastSentDirection;
+
     private void Update()
     {
-        if (!hasAuthority || gun == null) return;
+        if (!hasAuthority || gun == null || armController == null) return;
 
         HandleFireInput();
 
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0f;
         Vector2 dir = (mouseWorld - transform.position).normalized;
-        CmdSendAimDirection(dir);
 
+        // Update local arm instantly
+        armController.SetAimDirection(dir, true);
+
+        // Send update to server only if direction changed significantly
+        if (Vector2.Angle(lastSentDirection, dir) > 1f)
+        {
+            lastSentDirection = dir;
+            CmdSendAimDirection(dir);
+        }
     }
+
 
     private void HandleFireInput()
     {
@@ -61,9 +72,12 @@ public class PlayerCombatController : NetworkBehaviour
 
     private void OnAimDirectionChanged(Vector2 oldDir, Vector2 newDir)
     {
-        if (armController != null)
-            armController.SetAimDirection(newDir);
+        if (armController != null && !hasAuthority)
+        {
+            armController.SetAimDirection(newDir, false);
+        }
     }
+
 
     public void HandleDeath()
     {
