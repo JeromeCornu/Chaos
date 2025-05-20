@@ -46,6 +46,17 @@ public class PlayerCombatController : NetworkBehaviour
     }
 
 
+    [ClientRpc]
+    private void RpcSetAimDirection(Vector2 dir)
+    {
+        if (!hasAuthority && armController != null)
+        {
+            armController.isOwner = false;
+            armController.SetAimDirection(dir);
+        }
+    }
+
+
 
     private void HandleFireInput()
     {
@@ -109,7 +120,9 @@ public class PlayerCombatController : NetworkBehaviour
     private void CmdSendAimDirection(Vector2 dir)
     {
         syncedAimDirection = dir;
+        RpcSetAimDirection(dir); 
     }
+
 
 
     [Command]
