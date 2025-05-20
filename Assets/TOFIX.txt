@@ -1,0 +1,3 @@
+
+- balles disparaissent avant de toucher en multi (doit mettre prediction client serv)
+- quand les bras bougent : un peu de lag (1 frame sur 2)
