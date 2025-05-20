@@ -8,6 +8,7 @@ public class Bullet : NetworkBehaviour
     private float lifetime;
     private int bouncesLeft;
     private float gravity;
+    private float damage;
 
     public void Init(GunStats stats)
     {
@@ -15,6 +16,7 @@ public class Bullet : NetworkBehaviour
         lifetime = stats.bulletLifetime;
         bouncesLeft = stats.bulletBounces;
         gravity = stats.bulletGravity;
+        damage = stats.bulletDamage;
 
         rb.gravityScale = gravity;
         rb.velocity = transform.right * stats.bulletSpeed;
@@ -41,14 +43,25 @@ public class Bullet : NetworkBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (bouncesLeft > 0)
+        if (isServer)
         {
-            bouncesLeft--;
-            // Bounces : nothing to do, physics 2D handles it
-        }
-        else
-        {
-            NetworkServer.Destroy(gameObject);
+            Health health = collision.collider.GetComponentInParent<Health>();
+
+            if (health != null)
+            {
+                health.TakeDamage((int)damage);
+            }
+
+            if (bouncesLeft > 0)
+            {
+                bouncesLeft--;
+                // nothing to do (physics 2D handles it)
+            }
+            else
+            {
+                NetworkServer.Destroy(gameObject);
+            }
         }
     }
+
 }

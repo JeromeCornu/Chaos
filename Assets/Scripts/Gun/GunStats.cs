@@ -9,5 +9,6 @@ public class GunStats
     public float bulletLifetime = 0f;
     public float bulletGravity = 0f;
     public int bulletBounces = 0;
-    public float spreadAngle = 5f;
+    public float spreadAngle = 2f;
+    public float bulletDamage = 10f;
 }

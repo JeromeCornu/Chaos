@@ -55,7 +55,7 @@ public class Gun : MonoBehaviour
         if (currentAmmo < stats.magazineSize && timeSinceLastShot >= autoReloadDelay)
         {
             reloadCoroutine = StartCoroutine(Reload());
-            Debug.Log("Auto reload triggered");
+            // Debug.Log("Auto reload triggered");
         }
     }
 
@@ -92,7 +92,7 @@ public class Gun : MonoBehaviour
                 bulletsDisplay.SetActive(true);
             }
 
-            Debug.Log("Reload cancelled due to firing");
+            // Debug.Log("Reload cancelled due to firing");
         }
 
         UpdateAmmoDisplay(currentAmmo);
@@ -146,7 +146,7 @@ public class Gun : MonoBehaviour
         }
 
         UpdateAmmoDisplay(currentAmmo);
-        Debug.Log("Gun reloaded!");
+        // Debug.Log("Gun reloaded!");
     }
 
 
