@@ -126,6 +126,24 @@ public class CardNavigationUI : MonoBehaviour
         });
     }
 
+    public void LoadCards(List<CardData> cardsData)
+    {
+        Debug.Log($"[CardNavigationUI] Loading {cardsData.Count} cards...");
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (i < cardsData.Count)
+            {
+                Debug.Log($"Assigning card {i}: {cardsData[i].cardName}");
+                cards[i].Setup(cardsData[i]);
+                cards[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                cards[i].gameObject.SetActive(false);
+            }
+        }
+    }
 
 
     public int TotalCards => cards.Count;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DefaultNamespace;
 using Mirror;
 using UnityEngine;
@@ -25,6 +26,10 @@ namespace GameState
 
         public uint CardChooserNetId => cardChooserNetId;
 
+        private List<CardData> allCardOptions = new(); // list of all SO card 
+
+        private List<CardData> currentCardSelection = new();
+
         private void Awake()
         {
             if (Instance == null)
@@ -41,6 +46,13 @@ namespace GameState
         private void Init()
         {
             if (_isInitialized) return;
+
+            // Load card SOs
+            if (allCardOptions.Count == 0)
+            {
+                allCardOptions = new List<CardData>(Resources.LoadAll<CardData>("SO_Card"));
+                Debug.Log($"[GameManager] Loaded {allCardOptions.Count} cards from Resources/SO_Card/");
+            }
 
             _gameStates = new Dictionary<EGameStates, GameState>
             {
@@ -60,6 +72,7 @@ namespace GameState
 
             _currentIndex = 0;
             _isInitialized = true;
+
         }
 
         public override void OnStartClient()
@@ -181,6 +194,34 @@ namespace GameState
 
             RpcChangeState_Server(EGameStates.CardChoose); // update all clients
             RpcShowCardSelectionUI(loserNetId, 0); 
+        }
+
+        public void GenerateCardChoices()
+        {
+            currentCardSelection.Clear();
+
+            List<CardData> available = new List<CardData>(allCardOptions);
+
+            for (int i = 0; i < 5; i++)
+            {
+                int index = Random.Range(0, available.Count);
+                currentCardSelection.Add(available[index]);
+                available.RemoveAt(index);
+            }
+
+            RpcDistributeCards(currentCardSelection.Select(c => allCardOptions.IndexOf(c)).ToArray());
+        }
+
+        [ClientRpc]
+        private void RpcDistributeCards(int[] indexes)
+        {
+            List<CardData> selected = new();
+            foreach (int i in indexes)
+                selected.Add(allCardOptions[i]);
+
+            Debug.Log("[GameManager] RpcDistributeCards selected: " + string.Join(", ", selected.Select(c => c.cardName)));
+
+            CardNavigationUI.Instance.LoadCards(selected);
         }
 
     }

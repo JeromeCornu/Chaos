@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 public class CardUI : MonoBehaviour
 {
@@ -9,12 +10,58 @@ public class CardUI : MonoBehaviour
     [SerializeField] private Color highlightColor = Color.yellow;
 
     private Vector3 originalScale;
+    [Header("UI Elements")]
+    [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private Image cardImage;
+    [SerializeField] private TextMeshProUGUI descriptionText;
+    [SerializeField] private Transform statContainer;
+    [SerializeField] private GameObject statLinePrefab;
 
-    void Awake()
+
+    private void Awake()
     {
         originalScale = transform.localScale;
-        Unhighlight(); // Setup initial
     }
+
+    public void Setup(CardData data)
+    {
+        Debug.Log($"[CardUI] Setting up card: {data.cardName}");
+
+        titleText.text = data.cardName;
+
+        if (data.cardImage != null)
+            cardImage.sprite = data.cardImage;
+
+        descriptionText.text = data.description;
+
+        // Clear previous stat lines
+        foreach (Transform child in statContainer)
+            Destroy(child.gameObject);
+
+        foreach (var modifier in data.statModifiers)
+        {
+            var statLine = Instantiate(statLinePrefab, statContainer);
+
+            // Get the 2 direct children: name and value
+            var nameText = statLine.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+            var valueText = statLine.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+
+            if (nameText == null || valueText == null)
+            {
+                Debug.LogError("[CardUI] StatLine prefab is missing child TextMeshProUGUI elements.");
+                continue;
+            }
+
+            nameText.text = modifier.stat.ToString();
+
+            string valueStr = modifier.value.ToString();
+            if (!valueStr.StartsWith("-"))
+                valueStr = "+" + valueStr;
+
+            valueText.text = valueStr;
+        }
+    }
+
 
     public void Highlight()
     {
