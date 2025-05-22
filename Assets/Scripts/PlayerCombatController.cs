@@ -68,7 +68,13 @@ public class PlayerCombatController : NetworkBehaviour
     public void HandleDeath()
     {
         Debug.Log("You are dead");
-        // TODO
+        CmdNotifyDeath();
+    }
+
+    [Command]
+    private void CmdNotifyDeath()
+    {
+        GameState.GameManager.Instance.GoToCardChoosePhase(netIdentity.netId);
     }
 
 

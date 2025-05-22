@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using DefaultNamespace;
 using Mirror;
 using UnityEngine;
@@ -18,7 +17,13 @@ namespace GameState
         public EGameStates CurrentStateKey => GameLoop[_currentIndex];
         public GameState CurrentGameState => _gameStates[CurrentStateKey];
 
-        private bool _isInitialized; 
+        private bool _isInitialized;
+
+        [SyncVar] private uint cardChooserNetId;
+        private int currentCardIndex = 0;
+        private int cardCount = 0;
+
+        public uint CardChooserNetId => cardChooserNetId;
 
         private void Awake()
         {
@@ -36,7 +41,7 @@ namespace GameState
         private void Init()
         {
             if (_isInitialized) return;
-            
+
             _gameStates = new Dictionary<EGameStates, GameState>
             {
                 { EGameStates.PreGame, new PreGameState(this) },
@@ -54,7 +59,6 @@ namespace GameState
             };
 
             _currentIndex = 0;
-            
             _isInitialized = true;
         }
 
@@ -64,12 +68,14 @@ namespace GameState
             Init();
             StartCoroutine(NotifyServerReady());
         }
-        
+
         private IEnumerator NotifyServerReady()
         {
             yield return new WaitUntil(() => NetworkClient.ready);
             yield return null;
-            LobbyController.Instance.LocalPlayerObject.GetComponent<ClientToServerComands>().NotifyServerReady();
+            LobbyController.Instance.LocalPlayerObject
+                .GetComponent<ClientToServerComands>()
+                .NotifyServerReady();
         }
 
         public void StartStateMachine()
@@ -79,7 +85,7 @@ namespace GameState
         }
 
         public void GoToNextState()
-        { 
+        {
             ChangeState(GetNextStateKey());
         }
 
@@ -107,7 +113,7 @@ namespace GameState
                 RpcChangeState_Server(newState);
             }
         }
-        
+
         [ClientRpc]
         private void RpcChangeState_Server(EGameStates newState)
         {
@@ -128,5 +134,54 @@ namespace GameState
                 _gameStates[CurrentStateKey].OnUpdate();
             }
         }
+
+        // card selection UI
+
+        public void TriggerCardSelectionForPlayer(uint loserNetId)
+        {
+            cardChooserNetId = loserNetId;
+            currentCardIndex = 0;
+
+            if (CardNavigationUI.Instance != null)
+                cardCount = CardNavigationUI.Instance.TotalCards;
+
+            RpcShowCardSelectionUI(loserNetId, currentCardIndex);
+        }
+
+        [ClientRpc]
+        private void RpcShowCardSelectionUI(uint interactorNetId, int highlightIndex)
+        {
+            if (CardNavigationUI.Instance != null)
+            {
+                CardNavigationUI.Instance.Show(interactorNetId);
+                CardNavigationUI.Instance.HighlightCard(highlightIndex);
+            }
+        }
+
+        public void MoveCardCursor(int direction)
+        {
+            if (cardCount == 0 && CardNavigationUI.Instance != null)
+                cardCount = CardNavigationUI.Instance.TotalCards;
+
+            currentCardIndex = (currentCardIndex + direction + cardCount) % cardCount;
+            RpcHighlightCard(currentCardIndex);
+        }
+
+        [ClientRpc]
+        private void RpcHighlightCard(int index)
+        {
+            if (CardNavigationUI.Instance != null)
+                CardNavigationUI.Instance.HighlightCard(index);
+        }
+
+        public void GoToCardChoosePhase(uint loserNetId)
+        {
+            _currentIndex = GameLoop.IndexOf(EGameStates.CardChoose);
+            cardChooserNetId = loserNetId;
+
+            RpcChangeState_Server(EGameStates.CardChoose); // update all clients
+            RpcShowCardSelectionUI(loserNetId, 0); 
+        }
+
     }
 }
