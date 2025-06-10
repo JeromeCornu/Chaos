@@ -1,6 +1,5 @@
 using Mirror;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Bullet : NetworkBehaviour
 {
@@ -9,6 +8,9 @@ public class Bullet : NetworkBehaviour
     private int bouncesLeft;
     private float gravity;
     private float damage;
+
+    [HideInInspector]
+    public bool isLocalVisualOnly = false;
 
     public void Init(GunStats stats)
     {
@@ -22,46 +24,74 @@ public class Bullet : NetworkBehaviour
         rb.velocity = transform.right * stats.bulletSpeed;
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        // Ignore local duplicatas (client-side prediction)
+        if (isLocalVisualOnly) return;
+
+        var bullets = FindObjectsOfType<Bullet>();
+        foreach (var b in bullets)
+        {
+            if (!b.isLocalVisualOnly) continue;
+
+            // replace with better verification if needed (with ID, timestamps, etc.)
+            float distance = Vector2.Distance(b.transform.position, transform.position);
+            if (distance < 0.5f)
+            {
+                Destroy(b.gameObject); // delete local visuel doublon
+                break;
+            }
+        }
+    }
+
     void Update()
     {
-        if (lifetime > 0f)
-            lifetime -= Time.deltaTime;
+        if (isLocalVisualOnly) return;
 
-        Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+        lifetime -= Time.deltaTime;
 
-        float margin = 0.1f;
-
-        bool outOfScreen = viewPos.x < -margin || viewPos.x > 1f + margin || viewPos.y < -margin;
-        bool expired = lifetime > 0f && lifetime <= 0f;
-
-        if (outOfScreen || expired)
+        if (lifetime <= 0f)
         {
-            if (isServer) NetworkServer.Destroy(gameObject);
+            if (isServer)
+                NetworkServer.Destroy(gameObject);
         }
+        else
+        {
+            // avoid projectiles to go out of the screen limits (client)
+            if (!isServer)
+            {
+                Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+                float margin = 0.1f;
+                bool outOfScreen = viewPos.x < -margin || viewPos.x > 1f + margin || viewPos.y < -margin;
 
+                if (outOfScreen)
+                    Destroy(gameObject);
+            }
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isServer)
+        if (isLocalVisualOnly) return;
+
+        if (!isServer) return;
+
+        Health health = collision.collider.GetComponentInParent<Health>();
+        if (health != null)
         {
-            Health health = collision.collider.GetComponentInParent<Health>();
+            health.TakeDamage((int)damage);
+        }
 
-            if (health != null)
-            {
-                health.TakeDamage((int)damage);
-            }
-
-            if (bouncesLeft > 0)
-            {
-                bouncesLeft--;
-                // nothing to do (physics 2D handles it)
-            }
-            else
-            {
-                NetworkServer.Destroy(gameObject);
-            }
+        if (bouncesLeft > 0)
+        {
+            bouncesLeft--;
+            // physics 2D handles bounce
+        }
+        else
+        {
+            NetworkServer.Destroy(gameObject);
         }
     }
-
 }

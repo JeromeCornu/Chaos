@@ -71,33 +71,43 @@ public class Gun : MonoBehaviour
         fireCooldown = stats.fireRate;
         currentAmmo--;
 
-        if (combatController != null && combatController.hasAuthority)
-        {
-            combatController.CmdUpdateAmmo(currentAmmo);
-        }
-
         timeSinceLastShot = 0f;
 
-        // If reload is in progress, cancel it
+        // cancel reload if needed
         if (reloadCoroutine != null)
         {
             StopCoroutine(reloadCoroutine);
             reloadCoroutine = null;
             isReloading = false;
-
-            // Only hide the reload UI if it was visible
-            if (reloadCircle.gameObject.activeSelf)
-            {
-                reloadCircle.gameObject.SetActive(false);
-                bulletsDisplay.SetActive(true);
-            }
-
-            // Debug.Log("Reload cancelled due to firing");
+            reloadCircle.gameObject.SetActive(false);
+            bulletsDisplay.SetActive(true);
         }
 
         UpdateAmmoDisplay(currentAmmo);
+
+        // spawn local visible directly 
+        SpawnLocalBullet(pos, rot);
+
+        if (combatController != null && combatController.hasAuthority)
+        {
+            combatController.CmdUpdateAmmo(currentAmmo);
+        }
+
         return true;
     }
+
+
+    public void SpawnLocalBullet(Vector3 position, Quaternion rotation)
+    {
+        GameObject bullet = Instantiate(bulletPrefab, position, rotation);
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        bulletScript.Init(stats);
+        bulletScript.isLocalVisualOnly = true;
+
+        // No NetworkServer.Spawn there, only local
+        Destroy(bullet, stats.bulletLifetime > 0 ? stats.bulletLifetime : 5f);
+    }
+
 
     public void ShootBullet(Vector3 position, Quaternion rotation)
     {
