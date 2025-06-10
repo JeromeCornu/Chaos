@@ -1,3 +1,4 @@
+
 namespace GameState
 {
     public class ChoosePowerUp : GameState
@@ -9,7 +10,10 @@ namespace GameState
 
         public override void Enable()
         {
-            
+            if (GameManager.Instance.isServer)
+            {
+                GameManager.Instance.GenerateCardChoices();
+            }
         }
 
         public override void OnUpdate()
