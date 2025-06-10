@@ -48,5 +48,12 @@ public class CardSelectionHandler : NetworkBehaviour
     void CmdMoveCursor(float direction)
     {
         GameManager.Instance.MoveCardCursor((int)direction);
+        RpcMoveCursor((int)direction);
+    }
+
+    [ClientRpc]
+    void RpcMoveCursor(float direction)
+    {
+        GameManager.Instance.MoveCardCursor((int)direction);
     }
 }
