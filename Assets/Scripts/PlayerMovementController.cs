@@ -73,6 +73,8 @@ public class PlayerMovementController : NetworkBehaviour
         }
     }
 
+    
+    
     public void FreezePlayer(bool value)
     {
         if (value)

@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using Mirror;
 using System.Collections;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 
 public class PlayerCombatController : NetworkBehaviour
@@ -18,26 +20,57 @@ public class PlayerCombatController : NetworkBehaviour
     private Vector2 syncedAimDirection;
     
     public bool canAim = true;
+    
+    private PlayerMovementController movement;
+    private string controlScheme = "";
 
+    private void OnEnable()
+    {
+        TryGetComponent(out movement);
+    }
 
     private void Update()
     {
         if(!canAim)return;
-        
+
+        if (Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame)
+        {
+            controlScheme = "PlayerGamepad";
+        }
+
+        if (Keyboard.current.wasUpdatedThisFrame || Mouse.current.wasUpdatedThisFrame)
+        {
+            controlScheme = "PlayerKeyboard";
+        }
+
         if (!hasAuthority || gun == null) return;
 
         HandleFireInput();
 
-        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 dir = default;
+        
+        //Mouse and keyboard
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mouseWorld.z = 0f;
-        Vector2 dir = (mouseWorld - transform.position).normalized;
+        //Gamepad
+
+        Vector2 playerCameraPos = Camera.main.WorldToScreenPoint(transform.position);
+
+        Vector3 WorldPosGamepad =
+            Camera.main.ScreenToWorldPoint(playerCameraPos + movement.input.PlayerInputs.Direction.ReadValue<Vector2>());
+        
+        //Choose dir according to control scheme
+        dir = controlScheme == "PlayerKeyboard" ? 
+            (mouseWorld - transform.position).normalized: 
+            (WorldPosGamepad - transform.position).normalized;
+        
         CmdSendAimDirection(dir);
 
     }
 
     private void HandleFireInput()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (movement.input.PlayerInputs.Shoot.triggered)
         {
             if (gun.TryFireLocal(out Vector3 pos, out Quaternion rot))
             {
