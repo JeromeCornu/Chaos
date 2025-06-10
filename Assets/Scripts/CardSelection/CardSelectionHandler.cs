@@ -34,7 +34,8 @@ public class CardSelectionHandler : NetworkBehaviour
         float moveInput = inputs.PlayerInputs.LeftRight.ReadValue<float>();
         if (Mathf.Abs(moveInput) > 0.5f)
         {
-            CmdMoveCursor(Mathf.Sign(moveInput));
+            RpcMoveCursor(Mathf.Sign(moveInput));
+            //CmdMoveCursor(Mathf.Sign(moveInput));
         }
     }
 
