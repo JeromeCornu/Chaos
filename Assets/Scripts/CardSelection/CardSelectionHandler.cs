@@ -34,8 +34,8 @@ public class CardSelectionHandler : NetworkBehaviour
         float moveInput = inputs.PlayerInputs.LeftRight.ReadValue<float>();
         if (Mathf.Abs(moveInput) > 0.5f)
         {
-            RpcMoveCursor(Mathf.Sign(moveInput));
             //CmdMoveCursor(Mathf.Sign(moveInput));
+            GameManager.Instance.MoveCardCursor((int)Mathf.Sign(moveInput));
         }
     }
 
@@ -47,13 +47,6 @@ public class CardSelectionHandler : NetworkBehaviour
 
     [Command]
     void CmdMoveCursor(float direction)
-    {
-        //GameManager.Instance.MoveCardCursor((int)direction);
-        RpcMoveCursor((int)direction);
-    }
-
-    [ClientRpc]
-    void RpcMoveCursor(float direction)
     {
         GameManager.Instance.MoveCardCursor((int)direction);
     }

@@ -173,7 +173,6 @@ namespace GameState
 
         public void MoveCardCursor(int direction)
         {
-            Debug.Log($"[GameManager] Moved {direction}");
             if (cardCount == 0 && CardNavigationUI.Instance != null)
                 cardCount = CardNavigationUI.Instance.TotalCards;
 
