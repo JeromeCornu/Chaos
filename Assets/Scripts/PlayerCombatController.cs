@@ -16,10 +16,14 @@ public class PlayerCombatController : NetworkBehaviour
 
     [SyncVar(hook = nameof(OnAimDirectionChanged))]
     private Vector2 syncedAimDirection;
+    
+    public bool canAim = true;
 
 
     private void Update()
     {
+        if(!canAim)return;
+        
         if (!hasAuthority || gun == null) return;
 
         HandleFireInput();

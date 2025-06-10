@@ -34,6 +34,8 @@ public class PlayerMovementController : NetworkBehaviour
     private CircleCollider2D playerCollider;
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
+    
+    public bool canMove = true;
 
     private void OnEnable()
     {
@@ -112,6 +114,8 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void Movement()
     {
+        if(!canMove) return;
+        
         float moveInput = input.PlayerInputs.LeftRight.ReadValue<float>();
         float velocityX = moveInput * moveSpeed;
 

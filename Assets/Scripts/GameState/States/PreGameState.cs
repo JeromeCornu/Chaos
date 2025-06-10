@@ -21,7 +21,7 @@ namespace GameState
             playerMovementController = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
 
             playerMovementController.FreezePlayer(true);
-            playerMovementController.input.Disable();
+            playerMovementController.canMove = false;
             playerMovementController.SetPosition();
         }
 
@@ -40,7 +40,8 @@ namespace GameState
         {
             Debug.Log("End pre game state");
             if (playerMovementController == null) return;
-            playerMovementController.input.Enable();
+            playerMovementController.canMove = true;
+            LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerCombatController>().canAim = true;
             playerMovementController.FreezePlayer(false);
         }
     }

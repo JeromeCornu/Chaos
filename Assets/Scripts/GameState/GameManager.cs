@@ -189,10 +189,9 @@ namespace GameState
 
         public void GoToCardChoosePhase(uint loserNetId)
         {
-            _currentIndex = GameLoop.IndexOf(EGameStates.CardChoose);
             cardChooserNetId = loserNetId;
 
-            RpcChangeState_Server(EGameStates.CardChoose); // update all clients
+            GoToNextState(); // update all clients
             RpcShowCardSelectionUI(loserNetId, 0); 
         }
 

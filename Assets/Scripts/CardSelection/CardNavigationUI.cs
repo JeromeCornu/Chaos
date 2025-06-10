@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class CardNavigationUI : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class CardNavigationUI : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private GameObject contentRoot;         // "Content"
     [SerializeField] private Transform cardsListContainer;   // "CardsList"
+    [SerializeField] private GameObject winnerBlockPannel;         // "WinnerBlock" 
 
     [Header("Input")]
     private Inputs inputActions;
