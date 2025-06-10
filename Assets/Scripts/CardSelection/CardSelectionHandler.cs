@@ -22,32 +22,32 @@ public class CardSelectionHandler : NetworkBehaviour
         inputs.Disable();
     }
 
-    void Update()
-    {
-        if (!isLocalPlayer) return;
-
-        if (Keyboard.current.tabKey.wasPressedThisFrame)
-        {
-            CmdRequestOpenCardSelection();
-        }
-
-        float moveInput = inputs.PlayerInputs.LeftRight.ReadValue<float>();
-        if (Mathf.Abs(moveInput) > 0.5f)
-        {
-            //CmdMoveCursor(Mathf.Sign(moveInput));
-            GameManager.Instance.MoveCardCursor((int)Mathf.Sign(moveInput));
-        }
-    }
-
-    [Command]
-    void CmdRequestOpenCardSelection()
-    {
-        GameManager.Instance.TriggerCardSelectionForPlayer(connectionToClient.identity.netId);
-    }
-
-    [Command]
-    void CmdMoveCursor(float direction)
-    {
-        GameManager.Instance.MoveCardCursor((int)direction);
-    }
+    // void Update()
+    // {
+    //     if (!isLocalPlayer) return;
+    //
+    //     if (Keyboard.current.tabKey.wasPressedThisFrame)
+    //     {
+    //         CmdRequestOpenCardSelection();
+    //     }
+    //
+    //     float moveInput = inputs.PlayerInputs.LeftRight.ReadValue<float>();
+    //     if (Mathf.Abs(moveInput) > 0.5f)
+    //     {
+    //         //CmdMoveCursor(Mathf.Sign(moveInput));
+    //         GameManager.Instance.MoveCardCursor((int)Mathf.Sign(moveInput));
+    //     }
+    // }
+    //
+    // [Command]
+    // void CmdRequestOpenCardSelection()
+    // {
+    //     GameManager.Instance.TriggerCardSelectionForPlayer(connectionToClient.identity.netId);
+    // }
+    //
+    // [Command]
+    // void CmdMoveCursor(float direction)
+    // {
+    //     GameManager.Instance.MoveCardCursor((int)direction);
+    // }
 }

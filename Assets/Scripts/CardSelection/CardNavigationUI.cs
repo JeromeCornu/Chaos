@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameState;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -99,9 +100,10 @@ public class CardNavigationUI : MonoBehaviour
     private void MoveCursor(int direction)
     {
         int newIndex = (currentIndex + direction + cards.Count) % cards.Count;
-        HighlightCard(newIndex);
+        //HighlightCard(newIndex);
+        GameManager.Instance.HighlightCard_Server(newIndex);
     }
-
+    
     public void HighlightCard(int index)
     {
         if (index < 0 || index >= cards.Count) return;

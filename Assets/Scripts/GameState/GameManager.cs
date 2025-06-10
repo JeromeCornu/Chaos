@@ -167,19 +167,26 @@ namespace GameState
             if (CardNavigationUI.Instance != null)
             {
                 CardNavigationUI.Instance.Show(interactorNetId);
-                CardNavigationUI.Instance.HighlightCard(highlightIndex);
+                //CardNavigationUI.Instance.HighlightCard(highlightIndex);
             }
         }
+        
+        // public void MoveCardCursor(int direction)
+        // {
+        //     Debug.Log($"[GameManager] Moving card {direction}");
+        //     if (cardCount == 0 && CardNavigationUI.Instance != null)
+        //         cardCount = CardNavigationUI.Instance.TotalCards;
+        //     
+        //     currentCardIndex = (currentCardIndex + direction + cardCount) % cardCount;
+        //     RpcHighlightCard(currentCardIndex);
+        // }
+        //
 
-        public void MoveCardCursor(int direction)
+        public void HighlightCard_Server(int index)
         {
-            if (cardCount == 0 && CardNavigationUI.Instance != null)
-                cardCount = CardNavigationUI.Instance.TotalCards;
-
-            currentCardIndex = (currentCardIndex + direction + cardCount) % cardCount;
-            RpcHighlightCard(currentCardIndex);
+            RpcHighlightCard(index);
         }
-
+        
         [ClientRpc]
         private void RpcHighlightCard(int index)
         {
