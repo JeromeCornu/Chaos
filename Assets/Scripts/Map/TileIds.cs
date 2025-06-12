@@ -8,7 +8,7 @@ namespace Map
     [CreateAssetMenu(fileName = "Tiles", menuName = "ScriptableObjects/Map/TileIDMap", order = 0)]
     public class TileIds : ScriptableObject
     {
-        private Dictionary<int , TileBase> _dictionaryTiles = new Dictionary<int , TileBase>();
+        private Dictionary<int , TileCompatibility> _dictionaryTiles = new Dictionary<int , TileCompatibility>();
         
         [SerializeField] private List<TileIDPair> tiles;
 
@@ -16,8 +16,13 @@ namespace Map
         {
             _dictionaryTiles = tiles.ToDictionary(pair => pair.ID, pair => pair.Tile);
         }
+
+        public Dictionary<int, TileCompatibility> GetDictionary()
+        {
+            return new Dictionary<int, TileCompatibility>(_dictionaryTiles);
+        }
         
-        public TileBase GetTile(int ID)
+        public TileCompatibility GetTile(int ID)
         {
             return (from tileIDPair in tiles where tileIDPair.ID == ID select tileIDPair.Tile).FirstOrDefault();
         }
@@ -33,6 +38,6 @@ namespace Map
     public class TileIDPair
     {
         public int ID;
-        public TileBase Tile;
+        public TileCompatibility Tile;
     }
 }

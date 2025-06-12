@@ -1,39 +1,41 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Map
 {
     [CreateAssetMenu(fileName = "TileCompatibility", menuName = "ScriptableObjects/Map/TileCompat", order = 1)]
     public class TileCompatibility : ScriptableObject
     {
-        [SerializeField] public int TileID;
+        [SerializeField] public TileBase TileID;
         
-        [SerializeField] private List<int> PossibleTileNorth;
-        [SerializeField] private List<int> PossibleTileEast;
-        [SerializeField] private List<int> PossibleTileSouth;
-        [SerializeField] private List<int> PossibleTileWest;
+        [SerializeField] private int SocketNorth;
+        [SerializeField] private int SocketEast;
+        [SerializeField] private int SocketSouth;
+        [SerializeField] private int SocketWest;
 
-
-        public List<int> GetCompatibleTilesInDirection(Cardinals direction)
+        public int GetSocketID(Cardinals cardinal)
         {
-            switch (direction)
+            switch(cardinal)
             {
                 case Cardinals.North:
-                    return PossibleTileNorth;
+                    return SocketNorth;
                     break;
                 case Cardinals.East:
-                    return PossibleTileEast;
+                    return SocketEast;
                     break;
                 case Cardinals.South:
-                    return PossibleTileSouth;
+                    return SocketSouth;
                     break;
                 case Cardinals.West:
-                    return PossibleTileWest;
+                    return SocketWest;
                     break;
                 default:
-                    return null;
+                    throw new ArgumentOutOfRangeException(nameof(cardinal), cardinal, null);
             }
         }
+        
     }
 
     public enum Cardinals

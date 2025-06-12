@@ -24,20 +24,20 @@ namespace Map
             
             
             //TODO : REDO ALL OF THE SETUP WITH DE DICTIONARY
-            
+            tileIds.CreateDictionary();
             InitMapCells();
             GenerateMap();
         }
 
         private void InitMapCells()
         {
-            // for (int i = 0; i < mapSize.x; i++)
-            // {
-            //     for (int j = 0; j < mapSize.y; j++)
-            //     {
-            //         Map[i][j] = new MapCell(MapObjectDictionary.Keys.ToList());
-            //     }
-            // }
+            for (int i = 0; i < mapSize.x; i++)
+            {
+                for (int j = 0; j < mapSize.y; j++)
+                {
+                    Map[i][j] = new MapCell(tileIds.GetDictionary());
+                }
+            }
         }
 
         private void GenerateMap()

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Map
 {
@@ -8,20 +9,16 @@ namespace Map
         public bool IsDone;
         
         private int TileID;
-        private TileIds possibleGameObjectIDs;
+        private Dictionary<int, TileCompatibility> possibleGameObjectIDs;
 
-        public MapCell(TileIds possibleGameObjectIDs)
+        public MapCell(Dictionary<int, TileCompatibility> possibleGameObjectIDs)
         {
-            
-            //TODO : NEED TO MAKE A COPY OF THE OBJECT TO BE ABLE TO DELETE
-            //(planing on duplicating the resulted dictionary (see if dictionary entries can be deleted))
-            
             this.possibleGameObjectIDs = possibleGameObjectIDs;
         }
 
         public void SetRandomObject()
         {
-            TileID = (int)(Random.value * possibleGameObjectIDs.GetTileCount());
+            TileID = (int)(Random.value * possibleGameObjectIDs.Count);
             
             IsDone = true;
         }
