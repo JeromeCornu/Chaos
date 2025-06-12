@@ -1,32 +1,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DefaultNamespace.Map
+namespace Map
 {
     public class MapCell
     {
         public bool IsDone;
         
-        private int GameObjectID;
-        private List<int> possibleGameObjectIDs;
-        
-        private MapCellCompatibility compatibility;
+        private int TileID;
+        private TileIds possibleGameObjectIDs;
 
-        public MapCell(List<int> possibleGameObjectIDs)
+        public MapCell(TileIds possibleGameObjectIDs)
         {
+            
+            //TODO : NEED TO MAKE A COPY OF THE OBJECT TO BE ABLE TO DELETE
+            //(planing on duplicating the resulted dictionary (see if dictionary entries can be deleted))
+            
             this.possibleGameObjectIDs = possibleGameObjectIDs;
         }
 
         public void SetRandomObject()
         {
-            int index = (int)Random.value * possibleGameObjectIDs.Count;
-            
-            GameObjectID = possibleGameObjectIDs[index];
+            TileID = (int)(Random.value * possibleGameObjectIDs.GetTileCount());
             
             IsDone = true;
         }
-        
-        
-        
+
+        public void SetCellAsTile(int ID)
+        {
+            TileID = ID;
+            
+            IsDone = true;
+        }
     }
 }
