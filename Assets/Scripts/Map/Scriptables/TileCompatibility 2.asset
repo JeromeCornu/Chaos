@@ -15,5 +15,5 @@ MonoBehaviour:
   TileID: {fileID: 11400000, guid: e886d7f791e9d60d5ad359673cfcc0c7, type: 2}
   SocketNorth: 0
   SocketEast: 1
-  SocketSouth: 1
+  SocketSouth: 1s
   SocketWest: -1

@@ -610,9 +610,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapSize: {x: 10, y: 18}
-  MapObjects: []
-  map: {fileID: 241255087}
-  tileBase: {fileID: 11400000, guid: 9694ad143a3ef9ed99b637df09f4b137, type: 2}
+  tilemap: {fileID: 241255087}
+  tileIds: {fileID: 11400000, guid: 509d2f9bafcd664419104df6181f2151, type: 2}
 --- !u!1 &1026054193
 GameObject:
   m_ObjectHideFlags: 0

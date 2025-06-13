@@ -8,34 +8,29 @@ namespace Map
     [CreateAssetMenu(fileName = "TileCompatibility", menuName = "ScriptableObjects/Map/TileCompat", order = 1)]
     public class TileCompatibility : ScriptableObject
     {
-        [SerializeField] public TileBase TileID;
+        [SerializeField] public TileBase Tile;
         
-        [SerializeField] private int SocketNorth;
-        [SerializeField] private int SocketEast;
-        [SerializeField] private int SocketSouth;
-        [SerializeField] private int SocketWest;
+        [SerializeField] private String SocketNorth;
+        [SerializeField] private String SocketEast;
+        [SerializeField] private String SocketSouth;
+        [SerializeField] private String SocketWest;
 
-        public int GetSocketID(Cardinals cardinal)
+        public String GetSocketID(Cardinals cardinal)
         {
             switch(cardinal)
             {
                 case Cardinals.North:
                     return SocketNorth;
-                    break;
                 case Cardinals.East:
                     return SocketEast;
-                    break;
                 case Cardinals.South:
                     return SocketSouth;
-                    break;
                 case Cardinals.West:
                     return SocketWest;
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cardinal), cardinal, null);
             }
         }
-        
     }
 
     public enum Cardinals
@@ -44,5 +39,20 @@ namespace Map
         East,
         South,
         West
+    }
+    
+    public static class CardinalsExtensions
+    {
+        public static Cardinals Opposite(this Cardinals direction)
+        {
+            return direction switch
+            {
+                Cardinals.North => Cardinals.South,
+                Cardinals.South => Cardinals.North,
+                Cardinals.East  => Cardinals.West,
+                Cardinals.West  => Cardinals.East,
+                _ => throw new ArgumentOutOfRangeException(nameof(direction), "Invalid direction")
+            };
+        }
     }
 }

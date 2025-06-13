@@ -10,11 +10,11 @@ namespace Map
     {
         private Dictionary<int , TileCompatibility> _dictionaryTiles = new Dictionary<int , TileCompatibility>();
         
-        [SerializeField] private List<TileIDPair> tiles;
+        [SerializeField] private List<TileCompatibility> tiles;
 
         public void CreateDictionary()
         {
-            _dictionaryTiles = tiles.ToDictionary(pair => pair.ID, pair => pair.Tile);
+            _dictionaryTiles = tiles.Select((obj, index) => new { index, obj }).ToDictionary(x => x.index ,x => x.obj);
         }
 
         public Dictionary<int, TileCompatibility> GetDictionary()
@@ -22,22 +22,9 @@ namespace Map
             return new Dictionary<int, TileCompatibility>(_dictionaryTiles);
         }
         
-        public TileCompatibility GetTile(int ID)
+        public TileBase GetTile(int ID)
         {
-            return (from tileIDPair in tiles where tileIDPair.ID == ID select tileIDPair.Tile).FirstOrDefault();
+            return _dictionaryTiles[ID].Tile;
         }
-
-        public int GetTileCount()
-        {
-            return tiles.Count;
-        }
-    }
-
-
-    [System.Serializable]
-    public class TileIDPair
-    {
-        public int ID;
-        public TileCompatibility Tile;
     }
 }
