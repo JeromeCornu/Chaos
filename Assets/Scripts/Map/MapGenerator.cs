@@ -1,6 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 namespace Map
@@ -14,11 +19,30 @@ namespace Map
     
         private List<List<MapCell>> MapBackend;
 
-        private void Start()
+        private static SynchronizationContext unityContext;
+
+        [Button]
+        private async void Start()
         {
+            unityContext = SynchronizationContext.Current;
             tileIds.CreateDictionary();
             InitMapCells();
-            GenerateMap();
+            await Task.Run(CreateMap);
+        }
+
+        private async void CreateMap()
+        {
+            Preset();
+            
+            try
+            {
+                await Task.Run(() => GenerateMap(MapBackend[0][0], mapSize.x * mapSize.y * 2));
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+
             DrawMap();
         }
 
@@ -31,39 +55,75 @@ namespace Map
                 List<MapCell> row = new List<MapCell>();
                 for (int j = 0; j < mapSize.y; j++)
                 {
-                    row.Add(new MapCell(tileIds.GetDictionary(), new(i,j), this));
+                    row.Add(new MapCell(tileIds.GetDictionary().Keys.ToList(), new(i,j), this));
                 }
                 MapBackend.Add(row);
             }
-            
-            MapBackend[0][0].SetRandomTile();
         }
 
-        private void GenerateMap()
+        private void Preset()
         {
-            int count = 0;
-            
-            for (int i = 1; i < mapSize.x; i++)
-                for (int j = 0; j < mapSize.y; j++)
-                    MapBackend[i][j].UpdateNeighbors();
+            // MapBackend[0][0].SetCellAsTile(1);
+            //
+            // UpdateNeighbors();
+            //
+            // var cell = FindCellLessEntropy();
+            //
+            // cell.SetRandomTile();
+            //
+            // Debug.Log("Chose : " + cell.GetTileID());
+            //
+            // UpdateNeighbors();
 
-            MapCell nextCell = FindCellLessEntropy();
-            nextCell.SetRandomTile();
-            count++;
-            
-            if (count >= mapSize.x * mapSize.y)
-                return;
-            
-            GenerateMap();
+            // for (int i = 0; i < mapSize.y; i++)
+            // {
+            //     MapBackend[2][i].SetCellAsTile(4);
+            // }
+
+            // for (int i = 0; i < mapSize.x; i++)
+            //     for (int j = 0; j < mapSize.y; j++)
+            //         MapBackend[i][j].SetCellAsTile(4);
+
         }
 
+        private void GenerateMap(MapCell cell, int depth)
+        {
+            if (depth <= 0 || IsDone()) return;
+            
+            cell.SetRandomTile();
+            
+            UpdateNeighbors();
+            
+            GenerateMap(FindCellLessEntropy(), depth - 1);
+        }
+
+        private void UpdateNeighbors()
+        {
+            for (int i = 0; i < mapSize.x; i++)
+            {
+                for (int j = 0; j < mapSize.y; j++)
+                {
+                    MapBackend[i][j].UpdateNeighbors();
+                }
+            }
+        }
+        
+        [Button]
         private void DrawMap()
         {
-            for (int i = 0; i < mapSize.y; i++)
+            unityContext.Post(_ => { DrawMapMainThread();}, null);
+        }
+        
+        private void DrawMapMainThread()
+        {
+            for (int i = 0; i < mapSize.x; i++)
             {
-                for (int j = 0; j < mapSize.x; j++)
+                for (int j = 0; j < mapSize.y; j++)
                 {
-                    tilemap.SetTile(new Vector3Int(i - i/2, j - j/2), tileIds.GetTile(MapBackend[i][j].GetTileID()));
+                    if (MapBackend[i][j].IsDone)
+                    {
+                        tilemap.SetTile(new Vector3Int(j - mapSize.y / 2, i - mapSize.x / 2), tileIds.GetTile(MapBackend[i][j].GetTileID()));
+                    }
                 }
             }
         }
@@ -74,7 +134,7 @@ namespace Map
             
             for (int i = 1; i < mapSize.x; i++)
                 for (int j = 0; j < mapSize.y; j++)
-                    result = MapBackend[i][j].GetEntropy() < result.GetEntropy() ? MapBackend[i][j] : result;
+                    result = MapBackend[i][j].GetEntropy() < result.GetEntropy() && !MapBackend[i][j].IsDone ? MapBackend[i][j] : result;
             return result;
         }
 
@@ -86,6 +146,18 @@ namespace Map
         public Vector2Int GetMapSize()
         {
             return mapSize;
+        }
+
+        private bool IsDone()
+        {
+            for (int i = 0; i < mapSize.x; i++)
+            {
+                for (int j = 0; j < mapSize.y; j++)
+                {
+                    if (!MapBackend[i][j].IsDone){return false;}
+                }
+            }
+            return true;
         }
     }
 }

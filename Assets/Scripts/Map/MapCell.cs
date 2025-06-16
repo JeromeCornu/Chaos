@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Map
 {
@@ -13,20 +12,32 @@ namespace Map
         public bool IsDone;
         
         private int _tileID;
-        private Dictionary<int, TileCompatibility> _possibleGameObjectIDs;
-        private Vector2 _coord;
+        private List<int> _possibleTileIDs;
+        public Vector2 Coord {get;}
         private MapGenerator _mapGen;
 
-        public MapCell(Dictionary<int, TileCompatibility> possibleGameObjectIDs, Vector2Int coord, MapGenerator mapGen)
+        public MapCell(List<int> possibleGameObjectIDs, Vector2Int coord, MapGenerator mapGen)
         {
-            _possibleGameObjectIDs = possibleGameObjectIDs;
-            _coord= coord;
+            _possibleTileIDs = possibleGameObjectIDs;
+            Coord= coord;
             _mapGen = mapGen;
         }
 
         public void SetRandomTile()
         {
-            _tileID = (int)(Random.value * _possibleGameObjectIDs.Count);
+            if (IsDone) return;
+            
+            Random rand = new Random();
+            
+            _tileID = _possibleTileIDs[rand.Next(_possibleTileIDs.Count)];
+
+            for (int i = 0; i < _possibleTileIDs.Count; i++)
+            {
+                if (_possibleTileIDs[i] != _tileID)
+                {
+                    _possibleTileIDs.Remove(_possibleTileIDs[i]);
+                }
+            }
             
             IsDone = true;
         }
@@ -39,48 +50,103 @@ namespace Map
             }
         }
 
-        private void UpdateNeighbor(Cardinals cardinal)
+        public void UpdateNeighbor(Cardinals cardinal)
         {
             MapCell neighbor = GetNeighbor(cardinal);
             
             if (neighbor == null || neighbor.IsDone)
                 return;
-            
-            List<String> validSocketsInCardinal = new List<String>();
-            
-            foreach (var kvp in _possibleGameObjectIDs)
-            {
-                validSocketsInCardinal.Add(kvp.Value.GetSocketID(cardinal));
-            }
 
-            for (var index = 0; index < neighbor._possibleGameObjectIDs.Count; index++)
+            if (IsDone)
             {
-                // TODO : FIX THIS SHIT IT WAS FOREACH BUT CANT EDIT ARRAY IN FOREACH,
-                // MIGRATED TO FOR WITH RIDER'S HELP AND IT FUCKED UP -_-
-                
-                var tileCompatibility = neighbor._possibleGameObjectIDs[index];
-                if (!CheckForCompatibilityInList(validSocketsInCardinal, tileCompatibility.GetSocketID(cardinal.Opposite())))
+                try
                 {
-                    neighbor.DeletePossibility(index);
+                    List<int> toRemove = new List<int>();
+                    for (var index = 0; index < neighbor._possibleTileIDs.Count; index++)
+                    {
+                        var tileID = neighbor._possibleTileIDs[index];
+
+                        String cardinalSocket = TileIds.GetTileCompatibility(_tileID).GetSocketID(cardinal);
+                        String otherSocket = TileIds.GetTileCompatibility(tileID).GetSocketID(cardinal.Opposite());
+                        bool isCompatible = CheckForSocketCompatibility(
+                            cardinalSocket,
+                            otherSocket);
+                        
+                        
+                        //Debug.Log("Result of " + cardinalSocket + " : " + otherSocket + " is " +isCompatible);
+                    
+                        if (!isCompatible)
+                        {
+                            toRemove.Add(tileID);
+                        }
+                    }
+                    neighbor._possibleTileIDs.RemoveAll(i => toRemove.Contains(i));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+                
+                
+                //Debug.Log("Result : Coord " + Coord + ": " + neighbor._possibleTileIDs.Count);
+                
+            }
+            else
+            {
+                List<String> validSocketsForCardinal = new List<String>();
+                List<int> toRemove = new List<int>();
+                
+                foreach (var tileID in _possibleTileIDs)
+                {
+                    validSocketsForCardinal.Add(TileIds.GetTileCompatibility(tileID).GetSocketID(cardinal));
+                }
+                
+                for (var index = 0; index < neighbor._possibleTileIDs.Count; index++)
+                {
+                    var tileID = neighbor._possibleTileIDs[index];
+                    if (!CheckForCompatibilityInList(validSocketsForCardinal, TileIds.GetTileCompatibility(tileID).GetSocketID(cardinal.Opposite())))
+                    {
+                        toRemove.Add(tileID);
+                    }
+                }
+                neighbor._possibleTileIDs.RemoveAll(i => toRemove.Contains(i));
+            }
+        }
+
+        private bool CheckForCompatibilityInList(List<String> possibleSockets, String checkedSocket)
+        {
+            return possibleSockets.Count(socket => CheckForSocketCompatibility(socket, checkedSocket)) > 0;
+        }
+        
+        public void TestCompat()
+        {
+            List<String> Sockets = new List<String>(){"-1","0","1","1s","2","2s","3","3s"};
+            
+            for (var i = 0; i < Sockets.Count; i++)
+            {
+                var idI = Sockets[i];
+
+                for (var j = 0; j < Sockets.Count; j++)
+                {
+                    var idJ = Sockets[j];
+                    
+                    bool compat = CheckForSocketCompatibility(idI.ToString(), idJ.ToString());
+                    
+                    Debug.Log(idI + ", " + idJ + " : " + compat);
                 }
             }
         }
-
-        private bool CheckForCompatibilityInList(List<String> possibleSockets, String CheckedSocket)
-        {
-            return possibleSockets.Count(socket => CheckForSocketCompatibility(socket, CheckedSocket)) > 0;
-        }
-        
         
         private bool CheckForSocketCompatibility(String socketID, String checkedSocket)
         {
-            return (checkedSocket == "1" && socketID == "1") ||
+            return (checkedSocket == "-1" && socketID == "-1") ||
                    (checkedSocket == "0" && socketID == "0") ||
                    (checkedSocket + "s" == socketID) ||
                    (checkedSocket == socketID + "s");
         }
         
-        private List<MapCell> GetNeighbors()
+        public List<MapCell> GetNeighbors()
         {
             List<MapCell> neighbors = new List<MapCell>
             {
@@ -98,23 +164,23 @@ namespace Map
             switch (cardinal)
             {
                 case Cardinals.North:
-                    if (IsCellInBounds((int)_coord.x + 1, (int)_coord.y))
-                        return _mapGen.GetMap()[(int)_coord.x + 1][(int)_coord.y];
+                    if (IsCellInBounds((int)Coord.x + 1, (int)Coord.y))
+                        return _mapGen.GetMap()[(int)Coord.x + 1][(int)Coord.y];
                     break;
                 case Cardinals.East:
                     
-                    if (IsCellInBounds((int)_coord.x, (int)_coord.y + 1))
-                        return _mapGen.GetMap()[(int)_coord.x][(int)_coord.y + 1];
+                    if (IsCellInBounds((int)Coord.x, (int)Coord.y + 1))
+                        return _mapGen.GetMap()[(int)Coord.x][(int)Coord.y + 1];
                     
                     break;
                 case Cardinals.South:
                     
-                    if (IsCellInBounds((int)_coord.x - 1, (int)_coord.y))
-                        return _mapGen.GetMap()[(int)_coord.x - 1][(int)_coord.y];
+                    if (IsCellInBounds((int)Coord.x - 1, (int)Coord.y))
+                        return _mapGen.GetMap()[(int)Coord.x - 1][(int)Coord.y];
                     break;
                 case Cardinals.West:
-                    if (IsCellInBounds((int)_coord.x, (int)_coord.y - 1))
-                        return _mapGen.GetMap()[(int)_coord.x][(int)_coord.y - 1];
+                    if (IsCellInBounds((int)Coord.x, (int)Coord.y - 1))
+                        return _mapGen.GetMap()[(int)Coord.x][(int)Coord.y - 1];
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cardinal), cardinal, null);
@@ -125,17 +191,20 @@ namespace Map
 
         private bool IsCellInBounds(int X, int Y)
         {
-            return X >= 0 && X <= _mapGen.GetMapSize().x && Y <= _mapGen.GetMapSize().y && Y >= 0;
-        }
-
-        private void DeletePossibility(int id)
-        {
-            _possibleGameObjectIDs.Remove(id);
+            return X >= 0 && X <= _mapGen.GetMapSize().x - 1 && Y <= _mapGen.GetMapSize().y - 1 && Y >= 0;
         }
 
         public void SetCellAsTile(int id)
         {
             _tileID = id;
+
+            for (int i = 0; i < _possibleTileIDs.Count; i++)
+            {
+                if (_possibleTileIDs[i] != _tileID)
+                {
+                    _possibleTileIDs.Remove(_possibleTileIDs[i]);
+                }
+            }
             
             IsDone = true;
         }
@@ -147,7 +216,7 @@ namespace Map
 
         public int GetEntropy()
         {
-            return _possibleGameObjectIDs.Count;
+            return _possibleTileIDs.Count;
         }
     }
 }

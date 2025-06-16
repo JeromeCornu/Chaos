@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 573957f55d0f4b9d8d232e463abf53c1, type: 3}
   m_Name: TileCompatibility 1
   m_EditorClassIdentifier: 
-  TileID: {fileID: 11400000, guid: c99fb7bb8bdd79cb89cb448b11642c6b, type: 2}
+  Tile: {fileID: 11400000, guid: c99fb7bb8bdd79cb89cb448b11642c6b, type: 2}
   SocketNorth: 0
   SocketEast: 1
-  SocketSouth: 0
-  SocketWest: 3
+  SocketSouth: 3
+  SocketWest: 0
