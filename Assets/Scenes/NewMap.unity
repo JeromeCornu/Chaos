@@ -389,7 +389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ea397ff2c146246bc195305206ac74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapSize: {x: 10, y: 10}
+  mapSize: {x: 10, y: 18}
   tilemap: {fileID: 241255087}
   tileIds: {fileID: 11400000, guid: 509d2f9bafcd664419104df6181f2151, type: 2}
 --- !u!1 &1026054193

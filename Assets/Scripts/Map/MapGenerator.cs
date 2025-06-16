@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 namespace Map
@@ -16,34 +18,51 @@ namespace Map
         
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private TileIds tileIds;
+
+        [SerializeField] private Vector2Int cellToPrint;
     
         private List<List<MapCell>> MapBackend;
 
         private static SynchronizationContext unityContext;
 
         [Button]
-        private async void Start()
+        private void Start()
         {
             unityContext = SynchronizationContext.Current;
             tileIds.CreateDictionary();
             InitMapCells();
-            await Task.Run(CreateMap);
+            Debug.Log("MapGenerator Start");
+            //await Task.Run(CreateMap);
+            CreateMap();
         }
-
-        private async void CreateMap()
+        
+        
+        private void CreateMap()
         {
             Preset();
             
-            try
-            {
-                await Task.Run(() => GenerateMap(MapBackend[0][0], mapSize.x * mapSize.y * 2));
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e);
-            }
+            // try
+            // {
+            //     await Task.Run(() => GenerateMap(MapBackend[0][0], mapSize.x * mapSize.y * 2));
+            // }
+            // catch (Exception e)
+            // {
+            //     Debug.Log(e);
+            // }
+            
+            //GenerateMap(MapBackend[0][0], mapSize.x * mapSize.y * 2);
 
-            DrawMap();
+            StartCoroutine(GenerateMap_Coroutine(MapBackend[0][0], mapSize.x * mapSize.y * 2));
+
+            
+        }
+
+        private void ShowCell()
+        {
+            MapCell cell = MapBackend[cellToPrint.x][cellToPrint.y];
+            
+            Debug.Log(cell.ToString());
+            
         }
 
         private void InitMapCells()
@@ -88,11 +107,31 @@ namespace Map
 
         private void GenerateMap(MapCell cell, int depth)
         {
-            if (depth <= 0 || IsDone()) return;
+            if (depth <= 0 || IsDone())
+            {
+                DrawMap();
+                return;
+            }
             
             cell.SetRandomTile();
             
             UpdateNeighbors();
+            
+            GenerateMap(FindCellLessEntropy(), depth - 1);
+        }
+        private IEnumerator GenerateMap_Coroutine(MapCell cell, int depth)
+        {
+            if (depth <= 0 || IsDone())
+            {
+                DrawMap();
+                yield break;
+            }
+            
+            cell.SetRandomTile();
+            
+            UpdateNeighbors();
+            
+            yield return null;
             
             GenerateMap(FindCellLessEntropy(), depth - 1);
         }

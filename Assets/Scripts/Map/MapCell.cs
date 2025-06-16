@@ -31,13 +31,13 @@ namespace Map
             
             _tileID = _possibleTileIDs[rand.Next(_possibleTileIDs.Count)];
 
-            for (int i = 0; i < _possibleTileIDs.Count; i++)
-            {
-                if (_possibleTileIDs[i] != _tileID)
-                {
-                    _possibleTileIDs.Remove(_possibleTileIDs[i]);
-                }
-            }
+            // for (int i = 0; i < _possibleTileIDs.Count; i++)
+            // {
+            //     if (_possibleTileIDs[i] != _tileID)
+            //     {
+            //         _possibleTileIDs.Remove(_possibleTileIDs[i]);
+            //     }
+            // }
             
             IsDone = true;
         }
@@ -198,13 +198,13 @@ namespace Map
         {
             _tileID = id;
 
-            for (int i = 0; i < _possibleTileIDs.Count; i++)
-            {
-                if (_possibleTileIDs[i] != _tileID)
-                {
-                    _possibleTileIDs.Remove(_possibleTileIDs[i]);
-                }
-            }
+            // for (int i = 0; i < _possibleTileIDs.Count; i++)
+            // {
+            //     if (_possibleTileIDs[i] != _tileID)
+            //     {
+            //         _possibleTileIDs.Remove(_possibleTileIDs[i]);
+            //     }
+            // }
             
             IsDone = true;
         }
@@ -217,6 +217,11 @@ namespace Map
         public int GetEntropy()
         {
             return _possibleTileIDs.Count;
+        }
+
+        public override string ToString()
+        {
+            return  $"IsDone : {IsDone}, coords : {Coord.ToString()}, Possible tile : {_possibleTileIDs}";
         }
     }
 }
