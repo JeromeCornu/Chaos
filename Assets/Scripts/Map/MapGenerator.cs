@@ -68,10 +68,10 @@ namespace Map
             
             // MapBackend[0][0].SetCellAsTile(4);
 
-            // for (int i = 0; i < mapSize.y; i++)
-            // {
-            //     MapBackend[2][i].SetCellAsTile(4);
-            // }
+            for (int i = 0; i < mapSize.y; i++)
+            {
+                MapBackend[2][i].SetCellAsTile(4);
+            }
 
             // for (int i = 0; i < mapSize.x; i++)
             //     for (int j = 0; j < mapSize.y; j++)
@@ -113,7 +113,7 @@ namespace Map
             {
                 for (int j = 0; j < mapSize.y; j++)
                 {
-                    if (MapBackend[i][j].IsDone)
+                    if (MapBackend[i][j].IsDone && MapBackend[i][j].GetTileID() != 4) // Skipes not ready tiles, and empty tiles (id = 4)
                     {
                         tilemap.SetTile(new Vector3Int(j - mapSize.y / 2, i - mapSize.x / 2), tileIds.GetTile(MapBackend[i][j].GetTileID()));
                     }
