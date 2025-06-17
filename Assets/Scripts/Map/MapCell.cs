@@ -10,10 +10,10 @@ namespace Map
     public class MapCell
     {
         public bool IsDone;
-        
+        public Vector2 Coord {get;}
+
         private int _tileID;
         private List<int> _possibleTileIDs;
-        public Vector2 Coord {get;}
         private MapGenerator _mapGen;
 
         public MapCell(List<int> possibleGameObjectIDs, Vector2Int coord, MapGenerator mapGen)
@@ -21,6 +21,16 @@ namespace Map
             _possibleTileIDs = possibleGameObjectIDs;
             Coord= coord;
             _mapGen = mapGen;
+        }
+        
+        public int GetTileID()
+        {
+            return _tileID;
+        }
+
+        public int GetEntropy()
+        {
+            return _possibleTileIDs.Count;
         }
 
         public void SetRandomTile()
@@ -31,6 +41,12 @@ namespace Map
             
             _tileID = _possibleTileIDs[rand.Next(_possibleTileIDs.Count)];
             
+            IsDone = true;
+        }
+        
+        public void SetCellAsTile(int id)
+        {
+            _tileID = id;
             IsDone = true;
         }
 
@@ -109,45 +125,13 @@ namespace Map
         {
             return possibleSockets.Count(socket => CheckForSocketCompatibility(socket, checkedSocket)) > 0;
         }
-        
-        public void TestCompat()
-        {
-            List<String> Sockets = new List<String>(){"-1","0","1","1s","2","2s","3","3s"};
-            
-            for (var i = 0; i < Sockets.Count; i++)
-            {
-                var idI = Sockets[i];
 
-                for (var j = 0; j < Sockets.Count; j++)
-                {
-                    var idJ = Sockets[j];
-                    
-                    bool compat = CheckForSocketCompatibility(idI.ToString(), idJ.ToString());
-                    
-                    Debug.Log(idI + ", " + idJ + " : " + compat);
-                }
-            }
-        }
-        
         private bool CheckForSocketCompatibility(String socketID, String checkedSocket)
         {
             return (checkedSocket == "-1" && socketID == "-1") ||
                    (checkedSocket == "0" && socketID == "0") ||
                    (checkedSocket + "s" == socketID) ||
                    (checkedSocket == socketID + "s");
-        }
-        
-        public List<MapCell> GetNeighbors()
-        {
-            List<MapCell> neighbors = new List<MapCell>
-            {
-                GetNeighbor(Cardinals.North),
-                GetNeighbor(Cardinals.East),
-                GetNeighbor(Cardinals.South),
-                GetNeighbor(Cardinals.West)
-            };
-
-            return neighbors;
         }
 
         private MapCell GetNeighbor(Cardinals cardinal)
@@ -185,20 +169,17 @@ namespace Map
             return X >= 0 && X <= _mapGen.GetMapSize().x - 1 && Y <= _mapGen.GetMapSize().y - 1 && Y >= 0;
         }
 
-        public void SetCellAsTile(int id)
+        public List<MapCell> GetNeighbors()
         {
-            _tileID = id;
-            IsDone = true;
-        }
+            List<MapCell> neighbors = new List<MapCell>
+            {
+                GetNeighbor(Cardinals.North),
+                GetNeighbor(Cardinals.East),
+                GetNeighbor(Cardinals.South),
+                GetNeighbor(Cardinals.West)
+            };
 
-        public int GetTileID()
-        {
-            return _tileID;
-        }
-
-        public int GetEntropy()
-        {
-            return _possibleTileIDs.Count;
+            return neighbors;
         }
 
         public override string ToString()

@@ -24,18 +24,14 @@ namespace Map
     
         private List<List<MapCell>> MapBackend;
 
-        private static SynchronizationContext unityContext;
-
         [Button]
         private void Start()
         {
-            unityContext = SynchronizationContext.Current;
             tileIds.CreateDictionary();
             InitMapCells();
             Debug.Log("MapGenerator Start");
             CreateMap();
         }
-        
         
         private void CreateMap()
         {
@@ -49,7 +45,6 @@ namespace Map
             MapCell cell = MapBackend[cellToPrint.x][cellToPrint.y];
             
             Debug.Log(cell.ToString());
-            
         }
 
         private void InitMapCells()
@@ -69,17 +64,9 @@ namespace Map
 
         private void Preset()
         {
-            // MapBackend[0][0].SetCellAsTile(8);
-            //
-            // UpdateNeighbors();
-            //
-            // var cell = FindCellLessEntropy();
-            //
-            // cell.SetRandomTile();
-            //
-            // Debug.Log("Chose : " + cell.GetTileID());
-            //
-            // UpdateNeighbors();
+            // EXAMPLES OF MAP MODIFICATIONS (tile 4 is empty tile)
+            
+            // MapBackend[0][0].SetCellAsTile(4);
 
             // for (int i = 0; i < mapSize.y; i++)
             // {
@@ -89,7 +76,7 @@ namespace Map
             // for (int i = 0; i < mapSize.x; i++)
             //     for (int j = 0; j < mapSize.y; j++)
             //         MapBackend[i][j].SetCellAsTile(4);
-
+            
         }
         private IEnumerator GenerateMap_Coroutine(MapCell cell, int depth)
         { 
@@ -106,7 +93,6 @@ namespace Map
                 DrawMap();
                 yield return null;
             }
-            Debug.Log(IsDone() ? "IsDone End" : "Depth End");
         }
 
         private void UpdateNeighbors()
@@ -122,11 +108,6 @@ namespace Map
         
         [Button]
         private void DrawMap()
-        {
-            unityContext.Post(_ => { DrawMapMainThread();}, null);
-        }
-        
-        private void DrawMapMainThread()
         {
             for (int i = 0; i < mapSize.x; i++)
             {
