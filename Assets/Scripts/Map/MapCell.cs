@@ -30,14 +30,6 @@ namespace Map
             Random rand = new Random();
             
             _tileID = _possibleTileIDs[rand.Next(_possibleTileIDs.Count)];
-
-            // for (int i = 0; i < _possibleTileIDs.Count; i++)
-            // {
-            //     if (_possibleTileIDs[i] != _tileID)
-            //     {
-            //         _possibleTileIDs.Remove(_possibleTileIDs[i]);
-            //     }
-            // }
             
             IsDone = true;
         }
@@ -53,6 +45,7 @@ namespace Map
         public void UpdateNeighbor(Cardinals cardinal)
         {
             MapCell neighbor = GetNeighbor(cardinal);
+            List<int> toRemove = new List<int>();
             
             if (neighbor == null || neighbor.IsDone)
                 return;
@@ -61,7 +54,6 @@ namespace Map
             {
                 try
                 {
-                    List<int> toRemove = new List<int>();
                     for (var index = 0; index < neighbor._possibleTileIDs.Count; index++)
                     {
                         var tileID = neighbor._possibleTileIDs[index];
@@ -71,9 +63,6 @@ namespace Map
                         bool isCompatible = CheckForSocketCompatibility(
                             cardinalSocket,
                             otherSocket);
-                        
-                        
-                        //Debug.Log("Result of " + cardinalSocket + " : " + otherSocket + " is " +isCompatible);
                     
                         if (!isCompatible)
                         {
@@ -87,15 +76,10 @@ namespace Map
                     Console.WriteLine(e);
                     throw;
                 }
-                
-                
-                //Debug.Log("Result : Coord " + Coord + ": " + neighbor._possibleTileIDs.Count);
-                
             }
             else
             {
                 List<String> validSocketsForCardinal = new List<String>();
-                List<int> toRemove = new List<int>();
                 
                 foreach (var tileID in _possibleTileIDs)
                 {
@@ -110,8 +94,15 @@ namespace Map
                         toRemove.Add(tileID);
                     }
                 }
-                neighbor._possibleTileIDs.RemoveAll(i => toRemove.Contains(i));
+                
             }
+
+            if (toRemove.Count == _possibleTileIDs.Count)
+            {
+                Debug.Log($"neighbor.Coord = {neighbor.Coord}, tile.Coord = {Coord}");
+            }
+            
+            neighbor._possibleTileIDs.RemoveAll(i => toRemove.Contains(i));
         }
 
         private bool CheckForCompatibilityInList(List<String> possibleSockets, String checkedSocket)
@@ -197,15 +188,6 @@ namespace Map
         public void SetCellAsTile(int id)
         {
             _tileID = id;
-
-            // for (int i = 0; i < _possibleTileIDs.Count; i++)
-            // {
-            //     if (_possibleTileIDs[i] != _tileID)
-            //     {
-            //         _possibleTileIDs.Remove(_possibleTileIDs[i]);
-            //     }
-            // }
-            
             IsDone = true;
         }
 
@@ -221,7 +203,14 @@ namespace Map
 
         public override string ToString()
         {
-            return  $"IsDone : {IsDone}, coords : {Coord.ToString()}, Possible tile : {_possibleTileIDs}";
+            String Ids = "";
+
+            foreach (int id in _possibleTileIDs)
+            {
+                Ids += id + ",";
+            }
+            
+            return  $"IsDone : {IsDone}, coords : {Coord.ToString()}, Possible tile : {Ids}";
         }
     }
 }
