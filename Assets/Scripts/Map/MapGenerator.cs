@@ -4,17 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GameState;
 using NaughtyAttributes;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 namespace Map
 {
     public class MapGenerator : MonoBehaviour
     {
+        public static event Action OnMapGenerated;
+        
         [SerializeField] private Vector2Int mapSize; 
         
         [SerializeField] private Tilemap tilemap;
@@ -23,18 +27,13 @@ namespace Map
         [SerializeField] private Vector2Int cellToPrint;
     
         private List<List<MapCell>> MapBackend;
-
-        [Button]
-        private void Start()
+        
+        public void CreateMap(int seed)
         {
+            Random.InitState(seed);
             tileIds.CreateDictionary();
             InitMapCells();
             Debug.Log("MapGenerator Start");
-            CreateMap();
-        }
-        
-        private void CreateMap()
-        {
             Preset();
             StartCoroutine(GenerateMap_Coroutine(MapBackend[0][0], mapSize.x * mapSize.y + 2));
         }
@@ -71,7 +70,21 @@ namespace Map
             for (int i = 0; i < mapSize.y; i++)
             {
                 MapBackend[2][i].SetCellAsTile(4);
+                UpdateNeighbors();
             }
+            
+            for (int i = 0; i < mapSize.x; i++)
+            {
+                MapBackend[i][mapSize.y/2].SetCellAsTile(4);
+                UpdateNeighbors();
+            }
+            
+            // Can't do this because I have no bottom tiles 
+            
+            // MapBackend[6][3].SetCellAsTile(0);
+            // UpdateNeighbors();
+            // MapBackend[6][15].SetCellAsTile(0);
+            // UpdateNeighbors();
 
             // for (int i = 0; i < mapSize.x; i++)
             //     for (int j = 0; j < mapSize.y; j++)
@@ -93,6 +106,7 @@ namespace Map
                 DrawMap();
                 yield return null;
             }
+            OnMapGenerated?.Invoke();
         }
 
         private void UpdateNeighbors()
@@ -109,6 +123,8 @@ namespace Map
         [Button]
         private void DrawMap()
         {
+            tilemap.ClearAllTiles();
+            
             for (int i = 0; i < mapSize.x; i++)
             {
                 for (int j = 0; j < mapSize.y; j++)

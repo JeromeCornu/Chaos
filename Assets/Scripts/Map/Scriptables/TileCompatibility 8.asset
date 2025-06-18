@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Tile: {fileID: 11400000, guid: 5be9e910fdf0d5188a4aa4d22941d738, type: 2}
   SocketNorth: 2s
-  SocketEast: 1s
+  SocketEast: 1
   SocketSouth: -1
   SocketWest: -1

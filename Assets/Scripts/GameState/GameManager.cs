@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DefaultNamespace;
+using DefaultNamespace.UI;
+using Map;
 using Mirror;
 using UnityEngine;
 
@@ -84,11 +86,19 @@ namespace GameState
 
         private IEnumerator NotifyServerReady()
         {
+            bool mapGenerated = false;
+            MapGenerator.OnMapGenerated += () => mapGenerated = true;
+            
+            UIManager.Instance.ShowLoadingScreen();
+            
             yield return new WaitUntil(() => NetworkClient.ready);
+            yield return new WaitUntil(() => mapGenerated); 
             yield return null;
             LobbyController.Instance.LocalPlayerObject
                 .GetComponent<ClientToServerComands>()
                 .NotifyServerReady();
+            
+            UIManager.Instance.HideLoadingScreen();
         }
 
         public void StartStateMachine()

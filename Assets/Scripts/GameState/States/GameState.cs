@@ -13,7 +13,7 @@ namespace GameState
             _gameManager = gameManager;
         }
 
-        public EGameStates GameState1 => _gameState;
+        public EGameStates GetGameState => _gameState;
 
         public abstract void Enable();
 

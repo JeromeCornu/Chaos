@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 
 namespace Map
 {
@@ -37,9 +37,7 @@ namespace Map
         {
             if (IsDone) return;
             
-            Random rand = new Random();
-            
-            _tileID = _possibleTileIDs[rand.Next(_possibleTileIDs.Count)];
+            _tileID = _possibleTileIDs[Random.Range(0,_possibleTileIDs.Count)];
             
             IsDone = true;
         }
@@ -113,10 +111,10 @@ namespace Map
                 
             }
 
-            if (toRemove.Count == _possibleTileIDs.Count)
-            {
-                Debug.Log($"neighbor.Coord = {neighbor.Coord}, tile.Coord = {Coord}");
-            }
+            // if (toRemove.Count == _possibleTileIDs.Count)
+            // {
+            //     Debug.Log($"neighbor.Coord = {neighbor.Coord}, tile.Coord = {Coord}");
+            // }
             
             neighbor._possibleTileIDs.RemoveAll(i => toRemove.Contains(i));
         }
