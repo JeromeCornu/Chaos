@@ -25,6 +25,7 @@ namespace Map
         [SerializeField] private TileIds tileIds;
 
         [SerializeField] private Vector2Int cellToPrint;
+        [SerializeField] private int seedDEBUG;
     
         private List<List<MapCell>> MapBackend;
         
@@ -36,6 +37,12 @@ namespace Map
             Debug.Log("MapGenerator Start");
             Preset();
             StartCoroutine(GenerateMap_Coroutine(MapBackend[0][0], mapSize.x * mapSize.y + 2));
+        }
+
+        [Button]
+        public void CreateMapManual()
+        {
+            CreateMap(seedDEBUG);
         }
 
         [Button]
