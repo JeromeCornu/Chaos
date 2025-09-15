@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using NaughtyAttributes;
 
 namespace DefaultNamespace.UI
 {
@@ -7,6 +9,7 @@ namespace DefaultNamespace.UI
         public static UIManager Instance;
         
         [SerializeField] private GameObject loadingScreen;
+        [SerializeField] private GameObject MapObstacle;
         
         private void Awake()
         {
@@ -21,7 +24,6 @@ namespace DefaultNamespace.UI
             }
         }
 
-
         public void ShowLoadingScreen()
         {
             loadingScreen.SetActive(true);
@@ -31,5 +33,22 @@ namespace DefaultNamespace.UI
         {
             loadingScreen.SetActive(false);
         }
+
+        [Button]
+        public void ShowMapObstacle()
+        {
+            MapObstacle.SetActive(true);
+        }
+
+        public void HideMapObstacle()
+        {
+            MapObstacle.SetActive(false);
+        }
+
+        public GameObject GetCardGrid()
+        {
+            return MapObstacle.GetComponentInChildren<GridLayoutGroup>().gameObject;
+        }
+        
     }
 }

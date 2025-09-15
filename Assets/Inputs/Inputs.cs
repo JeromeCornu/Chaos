@@ -44,6 +44,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""a73b8b2c-68f7-4d7c-8b8e-6b9ea856fa39"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -123,6 +132,17 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""347ef88c-9e43-49a7-bc0c-47faf2dfdc99"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -133,6 +153,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_PlayerInputs = asset.FindActionMap("PlayerInputs", throwIfNotFound: true);
         m_PlayerInputs_LeftRight = m_PlayerInputs.FindAction("LeftRight", throwIfNotFound: true);
         m_PlayerInputs_Jump = m_PlayerInputs.FindAction("Jump", throwIfNotFound: true);
+        m_PlayerInputs_Cancel = m_PlayerInputs.FindAction("Cancel", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -196,12 +217,14 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private List<IPlayerInputsActions> m_PlayerInputsActionsCallbackInterfaces = new List<IPlayerInputsActions>();
     private readonly InputAction m_PlayerInputs_LeftRight;
     private readonly InputAction m_PlayerInputs_Jump;
+    private readonly InputAction m_PlayerInputs_Cancel;
     public struct PlayerInputsActions
     {
         private @Inputs m_Wrapper;
         public PlayerInputsActions(@Inputs wrapper) { m_Wrapper = wrapper; }
         public InputAction @LeftRight => m_Wrapper.m_PlayerInputs_LeftRight;
         public InputAction @Jump => m_Wrapper.m_PlayerInputs_Jump;
+        public InputAction @Cancel => m_Wrapper.m_PlayerInputs_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputs; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -217,6 +240,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @Cancel.started += instance.OnCancel;
+            @Cancel.performed += instance.OnCancel;
+            @Cancel.canceled += instance.OnCancel;
         }
 
         private void UnregisterCallbacks(IPlayerInputsActions instance)
@@ -227,6 +253,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @Cancel.started -= instance.OnCancel;
+            @Cancel.performed -= instance.OnCancel;
+            @Cancel.canceled -= instance.OnCancel;
         }
 
         public void RemoveCallbacks(IPlayerInputsActions instance)
@@ -248,5 +277,6 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     {
         void OnLeftRight(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
 }
