@@ -6,7 +6,7 @@ namespace GameState
     public class FightState : GameState
     {
 
-        public GameObject Winner;
+        public uint Winner;
         
         public FightState(GameManager manager) : base( manager )
         {

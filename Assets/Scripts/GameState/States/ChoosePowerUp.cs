@@ -1,4 +1,6 @@
 
+using DefaultNamespace.CardSelection;
+
 namespace GameState
 {
     public class ChoosePowerUp : GameState
@@ -10,9 +12,15 @@ namespace GameState
 
         public override void Enable()
         {
+            CardSelectionManager.Instance.Init();
+            
+            var winnerID = ((FightState)_gameManager.GetPreviousGameState()).Winner;
+            
+            CardSelectionManager.Instance.RpcShowCardSelectionUI(winnerID, 0);
+            
             if (GameManager.Instance.isServer)
             {
-                GameManager.Instance.GenerateCardChoices();
+                CardSelectionManager.Instance.GenerateCardChoices();
             }
         }
 

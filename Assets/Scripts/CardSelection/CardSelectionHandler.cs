@@ -1,3 +1,4 @@
+using DefaultNamespace.CardSelection;
 using GameState;
 using Mirror;
 using UnityEngine;
@@ -41,12 +42,12 @@ public class CardSelectionHandler : NetworkBehaviour
     [Command]
     void CmdRequestOpenCardSelection()
     {
-        GameManager.Instance.TriggerCardSelectionForPlayer(connectionToClient.identity.netId);
+        CardSelectionManager.Instance.TriggerCardSelectionForPlayer(connectionToClient.identity.netId);
     }
 
     [Command]
     void CmdMoveCursor(float direction)
     {
-        GameManager.Instance.MoveCardCursor((int)direction);
+        CardSelectionManager.Instance.MoveCardCursor((int)direction);
     }
 }
