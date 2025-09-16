@@ -28,7 +28,7 @@ namespace GameState
         private IEnumerator Countdown()
         {
             yield return new WaitForSeconds(3);
-            GameManager.Instance.GoToNextState(); // should go to fight
+            GameManager.Instance.GoToNextState();
         }
         
         public override void OnUpdate()

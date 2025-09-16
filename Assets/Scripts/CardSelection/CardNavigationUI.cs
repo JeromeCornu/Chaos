@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using GameState;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -148,7 +147,6 @@ public class CardNavigationUI : MonoBehaviour
         cards[currentIndex].PlaySelectAnimation(() =>
         {
             Hide();
-            GameManager.Instance.GoToNextState(); // should go to map editing
         });
     }
 

@@ -76,7 +76,7 @@ public class PlayerCombatController : NetworkBehaviour
     private void CmdNotifyDeath()
     {
         ((FightState)GameManager.Instance.CurrentGameState).Winner = netIdentity.netId;
-        GameManager.Instance.GoToNextState(); // should go to power up
+        GameManager.Instance.GoToNextState();
     }
 
 
