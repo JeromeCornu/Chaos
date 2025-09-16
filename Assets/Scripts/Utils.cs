@@ -16,7 +16,7 @@ namespace Utils
 
             // Trim to count
             count = Mathf.Min(count, entries.Count);
-            List<T> result = entries.GetRange(0, count);
+            var result = entries.GetRange(0, count);
 
             return result;
         }
