@@ -6,7 +6,6 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
-using Utils;
 using Random = UnityEngine.Random;
 
 namespace Map.MapObstacles
@@ -35,8 +34,8 @@ namespace Map.MapObstacles
             obstaclesIDs.CreateDictionary();
             cam = Camera.main;
             cardGrid = UIManager.Instance.GetCardGrid();
-
-            List<int> selectedObstaclesIDs = obstaclesIDs.GetDictionary().Keys.ToList().GetRandomDistinctCount(2);
+            
+            List<int> selectedObstaclesIDs = GetRandomDistinct(obstaclesIDs.GetDictionary().Keys.ToList(), 2);
 
             foreach (Transform child in cardGrid.transform)
             {
@@ -50,6 +49,23 @@ namespace Map.MapObstacles
                 Instantiate(obstacleUICardPrefab, cardGrid.transform).TryGetComponent( out ObstacleCard card);
                 card.Init(obstacleID, obs.ObstacleName, obs.Sprite, this);
             }
+        }
+
+        private static List<int> GetRandomDistinct(List<int> entries, int count)
+        {
+
+            // Fisher-Yates Shuffle
+            for (int i = entries.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (entries[i], entries[j]) = (entries[j], entries[i]);
+            }
+
+            // Trim to count
+            count = Mathf.Min(count, entries.Count);
+            List<int> result = entries.GetRange(0, count);
+
+            return result;
         }
 
         [Command(requiresAuthority = false)]
