@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
+using Utils;
 
 namespace DefaultNamespace.CardSelection
 {
@@ -83,16 +84,7 @@ namespace DefaultNamespace.CardSelection
 
         public void GenerateCardChoices()
         {
-            currentCardSelection.Clear();
-
-            List<CardData> available = new List<CardData>(allCardOptions);
-
-            for (int i = 0; i < 5; i++)
-            {
-                int index = Random.Range(0, available.Count);
-                currentCardSelection.Add(available[index]);
-                available.RemoveAt(index);
-            }
+            currentCardSelection = allCardOptions.GetRandomDistinctCount(5);
 
             RpcDistributeCards(currentCardSelection.Select(c => allCardOptions.IndexOf(c)).ToArray());
         }
