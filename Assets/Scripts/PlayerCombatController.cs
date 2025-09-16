@@ -1,7 +1,6 @@
 using UnityEngine;
 using Mirror;
 using System.Collections;
-using GameState;
 using UnityEngine.InputSystem.XR;
 
 public class PlayerCombatController : NetworkBehaviour
@@ -75,8 +74,7 @@ public class PlayerCombatController : NetworkBehaviour
     [Command]
     private void CmdNotifyDeath()
     {
-        ((FightState)GameManager.Instance.CurrentGameState).Winner = netIdentity.netId;
-        GameManager.Instance.GoToNextState();
+        GameState.GameManager.Instance.GoToCardChoosePhase(netIdentity.netId);
     }
 
 
