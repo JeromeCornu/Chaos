@@ -32,6 +32,8 @@ namespace GameState
 
         private List<CardData> currentCardSelection = new();
 
+        public Dictionary<EGameStates, GameState> GameStates => _gameStates;
+
         private void Awake()
         {
             if (Instance == null)
@@ -158,6 +160,7 @@ namespace GameState
             }
         }
 
+        //TODO remove this from game manager and make own manager (also use the different states to trigger events)
         // card selection UI
 
         public void TriggerCardSelectionForPlayer(uint loserNetId)
@@ -197,6 +200,7 @@ namespace GameState
                 CardNavigationUI.Instance.HighlightCard(index);
         }
 
+        //TODO this is not the intended use of game manager 
         public void GoToCardChoosePhase(uint loserNetId)
         {
             _currentIndex = GameLoop.IndexOf(EGameStates.CardChoose);

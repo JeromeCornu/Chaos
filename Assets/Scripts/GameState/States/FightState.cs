@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -5,8 +6,6 @@ namespace GameState
 {
     public class FightState : GameState
     {
-
-        public GameObject Winner;
         
         public FightState(GameManager manager) : base( manager )
         {
@@ -27,7 +26,27 @@ namespace GameState
 
         public override void Disable()
         {
+            if(!_gameManager.isServer) return;
             
+            var networkManager = CustomNetworkManager.singleton as CustomNetworkManager;
+
+            if (networkManager == null) return;
+            List<PlayerObjectController> playerList = networkManager.GamePlayers;
+
+            foreach ( PlayerObjectController player in playerList)
+            {
+                player.TryGetComponent(out Health health);
+                if (health.currentHealth <= 0)
+                {
+                    ((ChoosePowerUp)_gameManager.GameStates[EGameStates.CardChoose]).SelectedPlayerSteamID =
+                        player.PlayerSteamID;
+                }
+                else
+                {
+                    ((MapEditing)_gameManager.GameStates[EGameStates.MapEditing]).SelectedPlayerSteamID =
+                        player.PlayerSteamID;
+                }
+            }
         }
     }
 }

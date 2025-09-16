@@ -1,10 +1,11 @@
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
 namespace DefaultNamespace.UI
 {
-    public class UIManager : MonoBehaviour
+    public class UIManager : NetworkBehaviour
     {
         public static UIManager Instance;
         
@@ -33,14 +34,28 @@ namespace DefaultNamespace.UI
         {
             loadingScreen.SetActive(false);
         }
-
-        [Button]
-        public void ShowMapObstacle()
+        
+        [Command(requiresAuthority = false)]
+        public void ShowMapObstacle(bool canInteract)
+        {
+            ShowMapObstacleRPC(canInteract);
+        }
+        
+        [ClientRpc]
+        public void ShowMapObstacleRPC(bool canInteract)
         {
             MapObstacle.SetActive(true);
+            MapObstacle.TryGetComponent(out GraphicRaycaster graphicRaycaster);
+            graphicRaycaster.enabled = canInteract;
         }
-
+        
+        [Command(requiresAuthority = false)]
         public void HideMapObstacle()
+        {
+            HideMapObstacleRPC();
+        }
+        [ClientRpc]
+        public void HideMapObstacleRPC()
         {
             MapObstacle.SetActive(false);
         }

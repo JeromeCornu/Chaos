@@ -2627,6 +2627,10 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 32.2
       objectReference: {fileID: 0}
+    - target: {fileID: 4727869684937934917, guid: b068d40079d1235fcb5356e011afaab6, type: 3}
+      propertyPath: sceneId
+      value: 2279068
+      objectReference: {fileID: 0}
     - target: {fileID: 4943332442101324617, guid: b068d40079d1235fcb5356e011afaab6, type: 3}
       propertyPath: m_Name
       value: LoadingScreen

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DefaultNamespace.UI;
 using GameState;
 using NaughtyAttributes;
 using Unity.VisualScripting;
@@ -175,5 +176,12 @@ namespace Map
             }
             return true;
         }
+
+        [Button]
+        private void ObstacleSelect()
+        {
+            UIManager.Instance.ShowMapObstacle(true);
+        }
+        
     }
 }

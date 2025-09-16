@@ -71,6 +71,11 @@ namespace Map.MapObstacles
         {
             tilemapVisual.ClearAllTiles();
         }
+
+        public void SetActiveVisualTileMap(bool active)
+        {
+            tilemapVisual.gameObject.SetActive(active);
+        }
         
         private void OnDisable()
         {

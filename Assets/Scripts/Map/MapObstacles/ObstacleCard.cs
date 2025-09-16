@@ -34,8 +34,8 @@ namespace Map.MapObstacles
             transform.SetParent(UIManager.Instance.transform);
             UIManager.Instance.HideMapObstacle();
             
-            _mapObstacleManager.Input.PlayerInputs.Cancel.performed += ctx => UIManager.Instance.ShowMapObstacle();
-            
+            _mapObstacleManager.Input.PlayerInputs.Cancel.performed += OnCanceledPerformed;
+            _mapObstacleManager.SetActiveVisualTileMap(true);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -52,16 +52,26 @@ namespace Map.MapObstacles
         public void OnEndDrag(PointerEventData eventData)
         {
             Debug.Log("OnEndDrag");
-            _mapObstacleManager.Input.PlayerInputs.Cancel.performed -= ctx => UIManager.Instance.ShowMapObstacle();
+            _mapObstacleManager.Input.PlayerInputs.Cancel.performed -= OnCanceledPerformed; 
 
             Vector3 worldPosition = _mapObstacleManager.cam.ScreenToWorldPoint(Input.mousePosition);
             
             _mapObstacleManager.ClearVisualMap();
+            _mapObstacleManager.SetActiveVisualTileMap(false);
             _mapObstacleManager.PlaceObstacleToServer(_id, worldPosition, false);
             
             GameManager.Instance.GoToNextState();
             
             Destroy(gameObject);
         }
+
+        private void OnCanceledPerformed(InputAction.CallbackContext ctx)
+        {
+            _mapObstacleManager.SetActiveVisualTileMap(true);
+            UIManager.Instance.ShowMapObstacle(
+                ((MapEditing)GameManager.Instance.CurrentGameState).CanInteract()
+            );
+        }
+        
     }
 }

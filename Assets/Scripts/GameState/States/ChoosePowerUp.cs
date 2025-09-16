@@ -1,8 +1,12 @@
 
+using Mirror;
+
 namespace GameState
 {
     public class ChoosePowerUp : GameState
     {
+        [SyncVar] public ulong SelectedPlayerSteamID;
+        
         public ChoosePowerUp(GameManager manager) : base( manager )
         {
             _gameState = EGameStates.CardChoose;
