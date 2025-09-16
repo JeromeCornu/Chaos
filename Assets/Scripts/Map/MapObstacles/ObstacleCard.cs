@@ -59,7 +59,7 @@ namespace Map.MapObstacles
             _mapObstacleManager.ClearVisualMap();
             _mapObstacleManager.PlaceObstacleToServer(_id, worldPosition, false);
             
-            GameManager.Instance.GoToNextState();
+            GameManager.Instance.GoToNextState(); // should go to pre game
             
             Destroy(gameObject);
         }
