@@ -15,7 +15,9 @@ namespace GameState
 
         public override void Enable()
         {
-            var temp = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
+            var playerMovementController = LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>();
+            playerMovementController.input.Enable();
+            playerMovementController.FreezePlayer(false);
         }
 
         public override void OnUpdate()
