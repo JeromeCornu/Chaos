@@ -40,11 +40,11 @@ namespace GameState
                 {
                     ((ChoosePowerUp)_gameManager.GameStates[EGameStates.CardChoose]).SelectedPlayerSteamID =
                         player.PlayerSteamID;
+                    ((MapEditing)_gameManager.GameStates[EGameStates.MapEditing]).PlayerSteamIDs.Insert(0, player.PlayerSteamID);
                 }
                 else
                 {
-                    ((MapEditing)_gameManager.GameStates[EGameStates.MapEditing]).SelectedPlayerSteamID =
-                        player.PlayerSteamID;
+                    ((MapEditing)_gameManager.GameStates[EGameStates.MapEditing]).PlayerSteamIDs.Add(player.PlayerSteamID);
                 }
             }
         }

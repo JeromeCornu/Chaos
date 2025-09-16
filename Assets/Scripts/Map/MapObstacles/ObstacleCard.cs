@@ -60,7 +60,7 @@ namespace Map.MapObstacles
             _mapObstacleManager.SetActiveVisualTileMap(false);
             _mapObstacleManager.PlaceObstacleToServer(_id, worldPosition, false);
             
-            GameManager.Instance.GoToNextState();
+            ((MapEditing)GameManager.Instance.CurrentGameState).playerOneIsDone();
             
             Destroy(gameObject);
         }

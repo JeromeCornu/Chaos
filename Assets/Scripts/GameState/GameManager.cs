@@ -6,6 +6,7 @@ using DefaultNamespace.UI;
 using Map;
 using Mirror;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GameState
 {

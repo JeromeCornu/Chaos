@@ -44,9 +44,7 @@ namespace DefaultNamespace.UI
         [ClientRpc]
         public void ShowMapObstacleRPC(bool canInteract)
         {
-            MapObstacle.SetActive(true);
-            MapObstacle.TryGetComponent(out GraphicRaycaster graphicRaycaster);
-            graphicRaycaster.enabled = canInteract;
+            MapObstacle.SetActive(canInteract);
         }
         
         [Command(requiresAuthority = false)]
@@ -55,7 +53,7 @@ namespace DefaultNamespace.UI
             HideMapObstacleRPC();
         }
         [ClientRpc]
-        public void HideMapObstacleRPC()
+        private void HideMapObstacleRPC()
         {
             MapObstacle.SetActive(false);
         }
