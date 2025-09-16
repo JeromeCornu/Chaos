@@ -48,6 +48,9 @@ public class CardNavigationUI : MonoBehaviour
         }
 
         contentRoot.SetActive(false);
+
+        inputActions.PlayerInputs.LeftRight.performed += OnLeftRightPerformed;
+        inputActions.PlayerInputs.Jump.performed += OnJumpPerformed;
     }
 
     public void Show(uint netIdOfAuthorizedPlayer)
@@ -66,6 +69,33 @@ public class CardNavigationUI : MonoBehaviour
         canNavigate = false;
     }
 
+    private void OnLeftRightPerformed(InputAction.CallbackContext ctx)
+    {
+        if (!canNavigate || !contentRoot.activeSelf )
+            return;
+        if (!(Time.time - lastMoveTime > moveCooldown)) return;
+        
+        
+        float axis = ctx.ReadValue<float>();
+        
+        switch (axis)
+        {
+            case > 0.5f:
+                MoveCursor(1);
+                lastMoveTime = Time.time;
+                break;
+            case < -0.5f:
+                MoveCursor(-1);
+                lastMoveTime = Time.time;
+                break;
+        }
+    }
+
+    private void OnJumpPerformed(InputAction.CallbackContext ctx)
+    {
+        SelectCurrentCard();
+    }
+    
     private void Update()
     {
         if (!canNavigate || !contentRoot.activeSelf)
@@ -86,12 +116,6 @@ public class CardNavigationUI : MonoBehaviour
                 lastMoveTime = Time.time;
             }
         }
-
-        if (inputActions.PlayerInputs.Jump.triggered)
-        {
-            SelectCurrentCard();
-        }
-
     }
 
     private void MoveCursor(int direction)

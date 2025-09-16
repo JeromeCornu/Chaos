@@ -16,27 +16,31 @@ public class CardSelectionHandler : NetworkBehaviour
     void OnEnable()
     {
         inputs.Enable();
+
+        inputs.PlayerInputs.LeftRight.performed += OnLeftRightClicked;
+        inputs.PlayerInputs.Tab.performed += OnTabClicked;
+
     }
 
-    void OnDisable()
-    {
-        inputs.Disable();
-    }
-
-    void Update()
+    private void OnLeftRightClicked(InputAction.CallbackContext ctx)
     {
         if (!isLocalPlayer) return;
+        if (Mathf.Abs(ctx.ReadValue<float>()) > 0.5f)
+            CmdMoveCursor(Mathf.Sign(ctx.ReadValue<float>()));
+    }
 
-        if (Keyboard.current.tabKey.wasPressedThisFrame)
-        {
-            CmdRequestOpenCardSelection();
-        }
-
-        float moveInput = inputs.PlayerInputs.LeftRight.ReadValue<float>();
-        if (Mathf.Abs(moveInput) > 0.5f)
-        {
-            CmdMoveCursor(Mathf.Sign(moveInput));
-        }
+    private void OnTabClicked(InputAction.CallbackContext ctx)
+    {
+        if (!isLocalPlayer) return;
+        CmdRequestOpenCardSelection();
+    }
+    
+    void OnDisable()
+    {
+        inputs.PlayerInputs.LeftRight.performed -= OnLeftRightClicked;
+        inputs.PlayerInputs.Tab.performed -= OnTabClicked;
+        
+        inputs.Disable();
     }
 
     [Command]

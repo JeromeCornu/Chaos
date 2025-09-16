@@ -53,6 +53,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Tab"",
+                    ""type"": ""Button"",
+                    ""id"": ""58e99343-1fa3-4735-accb-8288d16f61ca"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -143,6 +152,17 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bc2fb352-ce5d-4f43-9c5c-fbb7f8d3ba8e"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -154,6 +174,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_PlayerInputs_LeftRight = m_PlayerInputs.FindAction("LeftRight", throwIfNotFound: true);
         m_PlayerInputs_Jump = m_PlayerInputs.FindAction("Jump", throwIfNotFound: true);
         m_PlayerInputs_Cancel = m_PlayerInputs.FindAction("Cancel", throwIfNotFound: true);
+        m_PlayerInputs_Tab = m_PlayerInputs.FindAction("Tab", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -218,6 +239,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerInputs_LeftRight;
     private readonly InputAction m_PlayerInputs_Jump;
     private readonly InputAction m_PlayerInputs_Cancel;
+    private readonly InputAction m_PlayerInputs_Tab;
     public struct PlayerInputsActions
     {
         private @Inputs m_Wrapper;
@@ -225,6 +247,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         public InputAction @LeftRight => m_Wrapper.m_PlayerInputs_LeftRight;
         public InputAction @Jump => m_Wrapper.m_PlayerInputs_Jump;
         public InputAction @Cancel => m_Wrapper.m_PlayerInputs_Cancel;
+        public InputAction @Tab => m_Wrapper.m_PlayerInputs_Tab;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputs; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -243,6 +266,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Cancel.started += instance.OnCancel;
             @Cancel.performed += instance.OnCancel;
             @Cancel.canceled += instance.OnCancel;
+            @Tab.started += instance.OnTab;
+            @Tab.performed += instance.OnTab;
+            @Tab.canceled += instance.OnTab;
         }
 
         private void UnregisterCallbacks(IPlayerInputsActions instance)
@@ -256,6 +282,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Cancel.started -= instance.OnCancel;
             @Cancel.performed -= instance.OnCancel;
             @Cancel.canceled -= instance.OnCancel;
+            @Tab.started -= instance.OnTab;
+            @Tab.performed -= instance.OnTab;
+            @Tab.canceled -= instance.OnTab;
         }
 
         public void RemoveCallbacks(IPlayerInputsActions instance)
@@ -278,5 +307,6 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         void OnLeftRight(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnTab(InputAction.CallbackContext context);
     }
 }
