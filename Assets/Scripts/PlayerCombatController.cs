@@ -109,10 +109,10 @@ public class PlayerCombatController : NetworkBehaviour
         CmdNotifyDeath();
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     private void CmdNotifyDeath()
     {
-        ((ChoosePowerUp)GameManager.Instance.GetNextGameState()).InteractorNetId = netIdentity.netId;
+        CardSelectionHandler.Instance.cardChooserNetId = netIdentity.netId;
         GameManager.Instance.GoToNextState();
     }
 

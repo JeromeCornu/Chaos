@@ -3,8 +3,6 @@ namespace GameState
 {
     public class ChoosePowerUp : GameState
     {
-        public uint InteractorNetId { get; set; }
-
         public ChoosePowerUp(GameManager manager) : base( manager )
         {
             _gameState = EGameStates.CardChoose;
@@ -14,7 +12,6 @@ namespace GameState
         {
             if (GameManager.Instance.isServer)
             {
-                CardSelectionHandler.Instance.cardChooserNetId = InteractorNetId;
                 CardSelectionHandler.Instance.GenerateCardChoices();
                 CardSelectionHandler.Instance.RpcShowCardSelectionUI(); 
             }
