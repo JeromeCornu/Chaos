@@ -20,6 +20,9 @@ namespace GameState
 
         private bool _isInitialized;
 
+        [SerializeField] private GameObject cardSelectionHandlerPrefab;
+
+
         private void Awake()
         {
             if (Instance == null)
@@ -32,6 +35,19 @@ namespace GameState
                 Destroy(gameObject);
             }
         }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            // Spawner le CardSelectionHandler
+            if (CardSelectionHandler.Instance == null)
+            {
+                GameObject handler = Instantiate(cardSelectionHandlerPrefab);
+                NetworkServer.Spawn(handler);
+            }
+        }
+
 
         private void Init()
         {

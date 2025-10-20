@@ -3,7 +3,8 @@ guid: db152ee5a304aa17b819506aaa0f925f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - cardSelectionHandlerPrefab: {fileID: 9138883902345939597, guid: 5e94f98f4a46cabb4a2a4475195f92fb, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
