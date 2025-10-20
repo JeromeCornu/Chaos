@@ -59,7 +59,7 @@ public class Health : NetworkBehaviour
     [ClientRpc]
     void RpcHandleDeath(uint idNet)
     {
-        if (combatController != null && idNet == combatController.netIdentity.netId)
+        if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity targetNet))
         {
             combatController.HandleDeath();
         }
