@@ -19,7 +19,7 @@ public class CardSelectionHandler : NetworkBehaviour
 
     private List<CardData> currentCardSelection = new();
     
-    [SyncVar] public uint cardChooserNetId;
+    public uint cardChooserNetId;
     private int currentCardIndex = 0;
     private int cardCount = 0;
     
@@ -40,8 +40,6 @@ public class CardSelectionHandler : NetworkBehaviour
 
     private void Start()
     {
-        NetworkServer.Spawn(gameObject);
-        
         // Load card SOs
         if (allCardOptions.Count == 0)
         {

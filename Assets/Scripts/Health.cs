@@ -29,8 +29,9 @@ public class Health : NetworkBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            PlayerDead();
             RpcHandleDeath(combatController.netIdentity.netId);
+            PlayerDead();
+            
         }
     }
 
@@ -52,13 +53,14 @@ public class Health : NetworkBehaviour
 
     void PlayerDead()
     {
-        CardSelectionHandler.Instance.cardChooserNetId = combatController.netIdentity.netId;
         GameManager.Instance.GoToNextState();
     }
     
     [ClientRpc]
     void RpcHandleDeath(uint idNet)
     {
+        CardSelectionHandler.Instance.cardChooserNetId = idNet;
+
         if (combatController != null && idNet == combatController.netIdentity.netId)
         {
             combatController.HandleDeath();
