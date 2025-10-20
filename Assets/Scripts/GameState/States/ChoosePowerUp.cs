@@ -3,6 +3,8 @@ namespace GameState
 {
     public class ChoosePowerUp : GameState
     {
+        public uint InteractorNetId { get; set; }
+
         public ChoosePowerUp(GameManager manager) : base( manager )
         {
             _gameState = EGameStates.CardChoose;
@@ -12,7 +14,8 @@ namespace GameState
         {
             if (GameManager.Instance.isServer)
             {
-                GameManager.Instance.GenerateCardChoices();
+                CardSelectionHandler.Instance.GenerateCardChoices();
+                CardSelectionHandler.Instance.RpcShowCardSelectionUI(InteractorNetId, 0); 
             }
             
             LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>().canMove = false;
@@ -27,7 +30,7 @@ namespace GameState
 
         public override void Disable()
         {
-            
+            CardSelectionHandler.Instance.HideCards();
         }
     }
 }

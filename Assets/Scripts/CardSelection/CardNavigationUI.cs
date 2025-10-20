@@ -100,8 +100,7 @@ public class CardNavigationUI : MonoBehaviour
     private void MoveCursor(int direction)
     {
         int newIndex = (currentIndex + direction + cards.Count) % cards.Count;
-        //HighlightCard(newIndex);
-        GameManager.Instance.HighlightCard_Server(newIndex);
+        CardSelectionHandler.Instance.HighlightCard_Server(newIndex);
     }
     
     public void HighlightCard(int index)
@@ -126,7 +125,8 @@ public class CardNavigationUI : MonoBehaviour
         // play selection animation then hide the UI
         cards[currentIndex].PlaySelectAnimation(() =>
         {
-            Hide();
+            //TODO : apply CARD effect
+            GameManager.Instance.GoToNextState();
         });
     }
 

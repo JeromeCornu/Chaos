@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Mirror;
 using System.Collections;
+using GameState;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 
@@ -111,7 +112,8 @@ public class PlayerCombatController : NetworkBehaviour
     [Command]
     private void CmdNotifyDeath()
     {
-        GameState.GameManager.Instance.GoToCardChoosePhase(netIdentity.netId);
+        ((ChoosePowerUp)GameManager.Instance.GetNextGameState()).InteractorNetId = netIdentity.netId;
+        GameManager.Instance.GoToNextState();
     }
 
 
