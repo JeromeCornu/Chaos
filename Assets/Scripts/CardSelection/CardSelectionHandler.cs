@@ -43,6 +43,15 @@ public class CardSelectionHandler : NetworkBehaviour
         Debug.Log($"[Client] cardChooserNetId changed from {oldValue} to {newValue}");
     }
 
+    public override void OnStartClient()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
+
+
     private void Start()
     {
         // Load card SOs
