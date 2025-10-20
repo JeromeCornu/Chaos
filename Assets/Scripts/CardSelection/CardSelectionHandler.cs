@@ -18,8 +18,7 @@ public class CardSelectionHandler : NetworkBehaviour
     private List<CardData> allCardOptions = new(); // list of all SO card 
 
     private List<CardData> currentCardSelection = new();
-
-    [SyncVar(hook = nameof(OnCardChooserNetIdChanged))]
+    
     public uint cardChooserNetId;
     private int currentCardIndex = 0;
     private int cardCount = 0;
@@ -38,30 +37,6 @@ public class CardSelectionHandler : NetworkBehaviour
         
         inputs = new Inputs();
     }
-    private void OnCardChooserNetIdChanged(uint oldValue, uint newValue)
-    {
-        Debug.Log($"[Client] cardChooserNetId changed from {oldValue} to {newValue}");
-    }
-
-    public override void OnStartServer()
-    {
-        Instance = this;
-
-        if (allCardOptions.Count == 0)
-        {
-            allCardOptions = new List<CardData>(Resources.LoadAll<CardData>("SO_Card"));
-            Debug.Log($"[CardSelectionHandler] Loaded {allCardOptions.Count} cards from Resources/SO_Card/");
-        }
-    }
-
-    public override void OnStartClient()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
-
 
     private void Start()
     {
