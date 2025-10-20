@@ -32,6 +32,12 @@ public class Health : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void HealMaxHealth()
+    {
+        currentHealth = maxHealth;
+    }
+
     void OnHealthChanged(int oldHealth, int newHealth)
     {
         if (healthSlider != null)

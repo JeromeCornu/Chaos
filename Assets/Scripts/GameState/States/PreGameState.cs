@@ -23,6 +23,7 @@ namespace GameState
             playerMovementController.FreezePlayer(true);
             playerMovementController.canMove = false;
             playerMovementController.SetPosition();
+            playerMovementController.gameObject.GetComponent<Health>().HealMaxHealth();
         }
 
         private IEnumerator Countdown()
