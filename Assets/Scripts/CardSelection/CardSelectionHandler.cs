@@ -40,6 +40,8 @@ public class CardSelectionHandler : NetworkBehaviour
 
     private void Start()
     {
+        NetworkServer.Spawn(gameObject);
+        
         // Load card SOs
         if (allCardOptions.Count == 0)
         {
