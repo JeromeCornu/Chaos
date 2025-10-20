@@ -124,4 +124,10 @@ public class CardSelectionHandler : NetworkBehaviour
     {
         CardNavigationUI.Instance.Hide();
     }
+
+    [TargetRpc]
+    public void TargetSetCardChooser(NetworkConnectionToClient target, uint netId)
+    {
+        this.cardChooserNetId = netId;
+    }
 }

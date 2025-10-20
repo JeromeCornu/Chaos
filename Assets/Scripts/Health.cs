@@ -52,14 +52,16 @@ public class Health : NetworkBehaviour
 
     void PlayerDead()
     {
-        CardSelectionHandler.Instance.cardChooserNetId = combatController.netIdentity.netId;
+        // Get connection of the target player (assuming you have reference to them)
+        NetworkConnectionToClient connToClient = combatController.connectionToClient as NetworkConnectionToClient;
+        CardSelectionHandler.Instance.TargetSetCardChooser(connToClient, combatController.netIdentity.netId);
         GameManager.Instance.GoToNextState();
     }
     
     [ClientRpc]
     void RpcHandleDeath(uint idNet)
     {
-        if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity targetNet))
+        if (combatController != null && idNet == combatController.netIdentity.netId)
         {
             combatController.HandleDeath();
         }
