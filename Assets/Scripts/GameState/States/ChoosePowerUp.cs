@@ -14,8 +14,9 @@ namespace GameState
         {
             if (GameManager.Instance.isServer)
             {
+                CardSelectionHandler.Instance.cardChooserNetId = InteractorNetId;
                 CardSelectionHandler.Instance.GenerateCardChoices();
-                CardSelectionHandler.Instance.RpcShowCardSelectionUI(InteractorNetId, 0); 
+                CardSelectionHandler.Instance.RpcShowCardSelectionUI(); 
             }
             
             LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerMovementController>().canMove = false;

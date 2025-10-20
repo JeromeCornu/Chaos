@@ -19,7 +19,7 @@ public class CardSelectionHandler : NetworkBehaviour
 
     private List<CardData> currentCardSelection = new();
     
-    [SyncVar] private uint cardChooserNetId;
+    [SyncVar] public uint cardChooserNetId;
     private int currentCardIndex = 0;
     private int cardCount = 0;
     
@@ -59,11 +59,11 @@ public class CardSelectionHandler : NetworkBehaviour
     }
     
     [ClientRpc]
-    public void RpcShowCardSelectionUI(uint interactorNetId, int highlightIndex)
+    public void RpcShowCardSelectionUI()
     {
         if (CardNavigationUI.Instance != null)
         {
-            CardNavigationUI.Instance.Show(interactorNetId);
+            CardNavigationUI.Instance.Show(cardChooserNetId);
         }
     }
         
@@ -79,11 +79,11 @@ public class CardSelectionHandler : NetworkBehaviour
             CardNavigationUI.Instance.HighlightCard(index);
     }
 
-    public void GoToCardChoosePhase(uint loserNetId)
-    {
-        GameManager.Instance.GoToNextState(); // update all clients
-        RpcShowCardSelectionUI(loserNetId, 0); 
-    }
+    // public void GoToCardChoosePhase(uint loserNetId)
+    // {
+    //     GameManager.Instance.GoToNextState(); // update all clients
+    //     RpcShowCardSelectionUI(loserNetId, 0); 
+    // }
 
     public void GenerateCardChoices()
     {
