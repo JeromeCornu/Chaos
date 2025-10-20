@@ -43,17 +43,6 @@ public class CardSelectionHandler : NetworkBehaviour
         Debug.Log($"[Client] cardChooserNetId changed from {oldValue} to {newValue}");
     }
 
-    public override void OnStartServer()
-    {
-        Instance = this;
-
-        if (allCardOptions.Count == 0)
-        {
-            allCardOptions = new List<CardData>(Resources.LoadAll<CardData>("SO_Card"));
-            Debug.Log($"[CardSelectionHandler] Loaded {allCardOptions.Count} cards from Resources/SO_Card/");
-        }
-    }
-
     public override void OnStartClient()
     {
         if (Instance == null)
