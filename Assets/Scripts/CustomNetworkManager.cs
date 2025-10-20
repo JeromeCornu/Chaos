@@ -14,8 +14,10 @@ public class CustomNetworkManager : NetworkManager
 
     [Header("Custom Prefabs")]
     public GameObject gameManagerPrefab;
+    public GameObject cardSelectionHandlerPrefab;
 
     private GameObject gameManagerInstance;
+    private GameObject cardSelectionHandlerInstance;
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
@@ -42,6 +44,12 @@ public class CustomNetworkManager : NetworkManager
             {
                 gameManagerInstance = Instantiate(gameManagerPrefab);
                 NetworkServer.Spawn(gameManagerInstance);
+            }
+            
+            if (cardSelectionHandlerInstance == null)
+            {
+                cardSelectionHandlerInstance = Instantiate(cardSelectionHandlerPrefab);
+                NetworkServer.Spawn(cardSelectionHandlerInstance);
             }
         }
     }
