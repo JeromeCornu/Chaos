@@ -1,3 +1,4 @@
+using GameState;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
@@ -28,7 +29,8 @@ public class Health : NetworkBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            RpcHandleDeath();
+            PlayerDead();
+            RpcHandleDeath(combatController.netIdentity.netId);
         }
     }
 
@@ -48,10 +50,16 @@ public class Health : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    void RpcHandleDeath()
+    void PlayerDead()
     {
-        if (combatController != null)
+        CardSelectionHandler.Instance.cardChooserNetId = combatController.netIdentity.netId;
+        GameManager.Instance.GoToNextState();
+    }
+    
+    [ClientRpc]
+    void RpcHandleDeath(uint netId)
+    {
+        if (combatController != null && netId == combatController.netIdentity.netId)
         {
             combatController.HandleDeath();
         }

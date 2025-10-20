@@ -106,16 +106,7 @@ public class PlayerCombatController : NetworkBehaviour
     public void HandleDeath()
     {
         Debug.Log("You are dead");
-        CmdNotifyDeath();
     }
-
-    [Command(requiresAuthority = false)]
-    private void CmdNotifyDeath()
-    {
-        CardSelectionHandler.Instance.cardChooserNetId = netIdentity.netId;
-        GameManager.Instance.GoToNextState();
-    }
-
 
     [Command]
     public void CmdUpdateAmmo(int value)
