@@ -1,6 +1,7 @@
 using GameState;
 using UnityEngine;
 using Mirror;
+using NaughtyAttributes;
 using UnityEngine.UI;
 
 public class Health : NetworkBehaviour
@@ -33,6 +34,18 @@ public class Health : NetworkBehaviour
             PlayerDead();
             
         }
+    }
+
+    [Button]
+    public void Die()
+    {
+        Die_Server();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void Die_Server()
+    {
+        TakeDamage(maxHealth);
     }
 
     [Server]
