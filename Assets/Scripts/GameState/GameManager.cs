@@ -82,7 +82,7 @@ namespace GameState
 
         public void GoToNextState()
         {
-            Debug.Log("next state" + GetNextStateKey().ToString());
+            Debug.Log("next state : " + GetNextStateKey());
             ChangeState(GetNextStateKey());
         }
 
@@ -103,6 +103,7 @@ namespace GameState
         public GameState GetPreviousGameState() =>
             _gameStates[GetPreviousStateKey()];
 
+        [Command(requiresAuthority = false)]
         private void ChangeState(EGameStates newState)
         {
             if (isServer)
