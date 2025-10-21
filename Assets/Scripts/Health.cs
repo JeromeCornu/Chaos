@@ -42,13 +42,13 @@ public class Health : NetworkBehaviour
         Die_Server();
     }
 
-    [Command(requiresAuthority = false)]
+    [Command]
     private void Die_Server()
     {
         TakeDamage(maxHealth);
     }
 
-    [Server]
+    [Command]
     public void HealMaxHealth()
     {
         currentHealth = maxHealth;
