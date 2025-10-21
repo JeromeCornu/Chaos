@@ -82,6 +82,7 @@ namespace GameState
 
         public void GoToNextState()
         {
+            Debug.Log("next state" + GetNextStateKey().ToString());
             ChangeState(GetNextStateKey());
         }
 

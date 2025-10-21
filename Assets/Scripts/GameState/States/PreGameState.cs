@@ -22,6 +22,7 @@ namespace GameState
 
             playerMovementController.FreezePlayer(true);
             playerMovementController.canMove = false;
+            LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerCombatController>().canAim = true;
             playerMovementController.SetPosition();
             playerMovementController.gameObject.GetComponent<Health>().HealMaxHealth();
         }
@@ -42,7 +43,6 @@ namespace GameState
             Debug.Log("End pre game state");
             if (playerMovementController == null) return;
             playerMovementController.canMove = true;
-            LobbyController.Instance.LocalPlayerObject.GetComponent<PlayerCombatController>().canAim = true;
             playerMovementController.FreezePlayer(false);
         }
     }

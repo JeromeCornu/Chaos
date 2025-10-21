@@ -66,7 +66,8 @@ public class CardSelectionHandler : NetworkBehaviour
             CardNavigationUI.Instance.Show(cardChooserNetId);
         }
     }
-        
+
+    [Command(requiresAuthority = false)]
     public void HighlightCard_Server(int index)
     {
         RpcHighlightCard(index);
