@@ -740,6 +740,7 @@ GameObject:
   - component: {fileID: 2674309731372330001}
   - component: {fileID: 8938360977963179577}
   - component: {fileID: 647082423016658791}
+  - component: {fileID: -6210766796113074760}
   m_Layer: 0
   m_Name: PlayerObject
   m_TagString: Untagged
@@ -873,6 +874,7 @@ MonoBehaviour:
   maxWallSlideSpeed: -3
   PlayerModel: {fileID: 5576696732350619448}
   playerCosmetics: {fileID: 5420049653729207086}
+  canMove: 1
 --- !u!114 &5420049653729207086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -910,6 +912,7 @@ MonoBehaviour:
   syncInterval: 0.1
   gun: {fileID: 4339761740963513867}
   armController: {fileID: 3815691628504453746}
+  canAim: 1
 --- !u!114 &3236253996580526050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1015,6 +1018,18 @@ MonoBehaviour:
   syncAngularVelocity: 1
   clearAngularVelocity: 0
   angularVelocitySensitivity: 0.1
+--- !u!114 &-6210766796113074760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7651553268621482656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c1f5133d45249cf99a09909181f1dab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8074838073391129727
 GameObject:
   m_ObjectHideFlags: 0
