@@ -115,6 +115,7 @@ public class CardNavigationUI : MonoBehaviour
         currentIndex = index;
     }
 
+    
     private void SelectCurrentCard()
     {
         if (cards.Count == 0 || currentIndex < 0 || currentIndex >= cards.Count)
@@ -125,8 +126,7 @@ public class CardNavigationUI : MonoBehaviour
         // play selection animation then hide the UI
         cards[currentIndex].PlaySelectAnimation(() =>
         {
-            //TODO : apply CARD effect
-            GameManager.Instance.GoToNextState();
+            CardSelectionHandler.Instance.SelectCard(currentIndex, CardSelectionHandler.Instance.cardChooserNetId);
         });
     }
 

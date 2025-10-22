@@ -103,11 +103,6 @@ public class PlayerCombatController : NetworkBehaviour
             armController.SetAimDirection(newDir);
     }
 
-    public void HandleDeath()
-    {
-        Debug.Log("You are dead");
-    }
-
     [Command]
     public void CmdUpdateAmmo(int value)
     {

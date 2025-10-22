@@ -80,12 +80,6 @@ public class CardSelectionHandler : NetworkBehaviour
             CardNavigationUI.Instance.HighlightCard(index);
     }
 
-    // public void GoToCardChoosePhase(uint loserNetId)
-    // {
-    //     GameManager.Instance.GoToNextState(); // update all clients
-    //     RpcShowCardSelectionUI(loserNetId, 0); 
-    // }
-
     public void GenerateCardChoices()
     {
         currentCardSelection.Clear();
@@ -114,15 +108,18 @@ public class CardSelectionHandler : NetworkBehaviour
         CardNavigationUI.Instance.LoadCards(selected);
     }
 
-    [Command(requiresAuthority = false)]
-    public void HideCards()
-    {
-        HideCards_RPC();
-    }
-
-    [ClientRpc]
-    private void HideCards_RPC()
+    [ClientRpc, Server]
+    public void HideCards_RPC()
     {
         CardNavigationUI.Instance.Hide();
+    }
+
+    [Command(requiresAuthority = false)]
+    public void SelectCard(int cardIndex, uint playerID)
+    {
+        //TODO apply effect to player 
+        Debug.Log("[GameManager] Selected card: " + cardIndex + " playerID: " + playerID);
+        
+        GameManager.Instance.GoToNextState();
     }
 }

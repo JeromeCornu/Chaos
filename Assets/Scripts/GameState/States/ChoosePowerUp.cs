@@ -30,7 +30,11 @@ namespace GameState
 
         public override void Disable()
         {
-            CardSelectionHandler.Instance.HideCards();
+            if (GameManager.Instance.isServer)
+            {
+                CardSelectionHandler.Instance.HideCards_RPC();
+
+            }
         }
     }
 }

@@ -102,8 +102,7 @@ namespace GameState
 
         public GameState GetPreviousGameState() =>
             _gameStates[GetPreviousStateKey()];
-
-        [Command(requiresAuthority = false)]
+        
         private void ChangeState(EGameStates newState)
         {
             if (isServer)
